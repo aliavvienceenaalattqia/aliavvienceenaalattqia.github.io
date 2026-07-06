@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[Nama Kamu] — Brand & Graphic Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAFAF6;
+    --ink: #16181A;
+    --ink-soft: #4A4E52;
+    --line: #DCDCD4;
+    --accent: #2B5D4C;
+    --accent-soft: #E4EFE9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .grid-guides {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    max-width: 1400px;
+    margin: 0 auto;
+    left: 0; right: 0;
+  }
+  .grid-guides span {
+    border-left: 1px solid rgba(22,24,26,0.05);
+    height: 100%;
+  }
+
+  .wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .nav-mark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .nav-links { display: flex; gap: 28px; color: var(--ink-soft); }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    min-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 0 80px;
+  }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-label::before {
+    content: '';
+    width: 22px; height: 1px;
+    background: var(--accent);
+  }
+  h1.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: clamp(42px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    max-width: 15ch;
+  }
+  .hero-title .accent-word {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .hero-sub {
+    margin-top: 32px;
+    max-width: 46ch;
+    font-size: 18px;
+    color: var(--ink-soft);
+  }
+  .hero-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 48px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .hero-meta div span {
+    display: block;
+    color: var(--ink);
+    font-size: 14px;
+    margin-top: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* SECTION HEADER */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 1px solid var(--line);
+    padding: 20px 0;
+    margin-top: 100px;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  .section-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  /* WORK GRID */
+  .work-list { padding-bottom: 40px; }
+  .work-item {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 48px;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .work-visual {
+    aspect-ratio: 4/3;
+    background: var(--accent-soft);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .work-visual .swatch-strip {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 10px;
+    display: flex;
+  }
+  .work-visual .swatch-strip div { flex: 1; }
+
+  .work-info h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .work-info .work-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+  .work-info p {
+    color: var(--ink-soft);
+    max-width: 48ch;
+    margin-bottom: 20px;
+  }
+  .work-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+    display: inline-block;
+  }
+
+  @media (max-width: 800px) {
+    .work-item { grid-template-columns: 1fr; }
+    .hero-meta { flex-wrap: wrap; gap: 24px; }
+  }
+
+  /* ABOUT */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    padding: 48px 0 40px;
+  }
+  .about p {
+    font-size: 19px;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+  .about-facts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .about-facts div {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 800px) {
+    .about { grid-template-columns: 1fr; }
+  }
+
+  /* CONTACT */
+  .contact {
+    padding: 80px 0 60px;
+    text-align: left;
+  }
+  .contact h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 600;
+    max-width: 14ch;
+    margin-bottom: 32px;
+  }
+  .contact-email {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 4vw, 40px);
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 6px;
+    display: inline-block;
+  }
+  .contact-socials {
+    margin-top: 40px;
+    display: flex;
+    gap: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .contact-socials a:hover { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 24px 0 40px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <nav>
+    <div class="nav-mark">[NK]</div>
+    <div class="nav-links">
+      <a href="#work">Karya</a>
+      <a href="#about">Tentang</a>
+      <a href="#contact">Kontak</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-label">GRAPHIC &amp; BRAND DESIGNER</div>
+    <h1 class="hero-title">Bikin identitas visual yang <span class="accent-word">gampang dikenali.</span></h1>
+    <p class="hero-sub">[Nama Kamu] — bekerja sama dengan brand untuk merancang logo, sistem visual, dan panduan identitas yang konsisten di semua touchpoint.</p>
+    <div class="hero-meta">
+      <div>PROJECT<span>12+</span></div>
+      <div>BERBASIS DI<span>Jakarta, ID</span></div>
+      <div>TERSEDIA<span>Untuk proyek baru</span></div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <span class="section-title">Karya Pilihan</span>
+      <span class="section-count">03 project</span>
+    </div>
+
+    <div class="work-list">
+
+      <div class="work-item reveal">
+        <div class="work-visual">
+          [ Cover project 1 ]
+          <div class="swatch-strip">
+            <div style="background:#2B5D4C"></div>
+            <div style="background:#DCDCD4"></div>
+            <div style="background:#16181A"></div>
+          </div>
+        </div>
+        <div class="work-info">
+          <span class="work-tag">IDENTITAS VISUAL — 2026</span>
+          <h3>Nama Project Satu</h3>
+          <p>Deskripsi singkat: masalah yang dihadapi brand, pendekatan desain yang diambil, dan hasil akhirnya. Fokus pada cerita, bukan cuma gambar.</p>
+          <a class="work-link" href="#">Lihat studi kasus →</a>
+        </div>
+      </div>
+
+      <div class="work-item reveal">
+        <div class="work-visual">
+          [ Cover project 2 ]
+          <div class="swatch-strip">
+            <div style="background:#7A4B2A"></div>
+            <div style="background:#EFE6D8"></div>
+            <div style="background:#16181A"></div>
+          </div>
+        </div>
+        <div class="work-info">
+          <span class="work-tag">LOGO &amp; PACKAGING — 2025</span>
+          <h3>Nama Project Dua</h3>
+          <p>Deskripsi singkat: masalah yang dihadapi brand, pendekatan desain yang diambil, dan hasil akhirnya.</p>
+          <a class="work-link" href="#">Lihat studi kasus →</a>
+        </div>
+      </div>
+
+      <div class="work-item reveal">
+        <div class="work-visual">
+          [ Cover project 3 ]
+          <div class="swatch-strip">
+            <div style="background:#3D4C7A"></div>
+            <div style="background:#C9CFE0"></div>
+            <div style="background:#16181A"></div>
+          </div>
+        </div>
+        <div class="work-info">
+          <span class="work-tag">BRAND GUIDELINE — 2025</span>
+          <h3>Nama Project Tiga</h3>
+          <p>Deskripsi singkat: masalah yang dihadapi brand, pendekatan desain yang diambil, dan hasil akhirnya.</p>
+          <a class="work-link" href="#">Lihat studi kasus →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <span class="section-title">Tentang</span>
+      <span class="section-count"></span>
+    </div>
+    <div class="about">
+      <div class="reveal">
+        <p>Halo, saya [Nama Kamu]. Saya membantu brand membangun identitas visual yang jelas, konsisten, dan gampang diingat — dari logo sampai sistem desain lengkap.</p>
+        <p>Pendekatan saya dimulai dari riset dan strategi, bukan langsung ke visual. Setiap keputusan desain punya alasan yang bisa dijelaskan ke klien.</p>
+      </div>
+      <div class="about-facts reveal">
+        <div><span>Pengalaman</span><span>X tahun</span></div>
+        <div><span>Tools</span><span>Figma, Illustrator</span></div>
+        <div><span>Spesialisasi</span><span>Brand identity</span></div>
+        <div><span>Klien</span><span>Startup — UMKM</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <span class="section-title">Kontak</span>
+      <span class="section-count"></span>
+    </div>
+    <div class="contact reveal">
+      <h2>Punya project brand yang mau digarap?</h2>
+      <a class="contact-email" href="mailto:nama@email.com">nama@email.com</a>
+      <div class="contact-socials">
+        <a href="#" target="_blank">Instagram</a>
+        <a href="#" target="_blank">LinkedIn</a>
+        <a href="#" target="_blank">Behance</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 [Nama Kamu]</span>
+    <span>Dibuat dengan grid, tanpa template.</span>
+  </footer>
+
+</div>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ali Avvienceena Al Attqia — Ekonomi Syariah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sacramento&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #F7F5F0;
@@ -390,9 +390,48 @@
   @media (prefers-reduced-motion: reduce) {
     .hero-photo, h1.hero-title, .hero-sub, .hero-eyebrow { animation: none; opacity: 1; transform: none; }
   }
+
+  /* INTRO SCREEN */
+  .intro-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: introSequence 2.6s ease forwards;
+  }
+  .intro-name {
+    font-family: 'Sacramento', cursive;
+    font-size: clamp(70px, 16vw, 150px);
+    color: var(--ink);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: introTextIn 1s ease 0.2s forwards;
+  }
+  @keyframes introTextIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes introSequence {
+    0%   { opacity: 1; }
+    65%  { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+  .intro-screen.done { display: none; }
+
+  body.intro-lock { overflow: hidden; height: 100vh; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro-screen { display: none; }
+  }
 </style>
 </head>
-<body>
+<body class="intro-lock">
+
+<div class="intro-screen" id="introScreen">
+  <div class="intro-name">Avin</div>
+</div>
 
 <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -656,6 +695,20 @@
 </div>
 
 <script>
+  // Intro screen
+  const introScreen = document.getElementById('introScreen');
+  const bodyEl = document.body;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    bodyEl.classList.remove('intro-lock');
+    introScreen.classList.add('done');
+  } else {
+    introScreen.addEventListener('animationend', () => {
+      introScreen.classList.add('done');
+      bodyEl.classList.remove('intro-lock');
+    });
+  }
+
   // Scroll progress bar
   const progressBar = document.getElementById('scrollProgress');
   function updateProgress() {

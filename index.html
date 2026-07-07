@@ -300,9 +300,101 @@
     html { scroll-behavior: auto; }
   }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: var(--gold);
+    z-index: 200;
+    transition: width 0.1s ease-out;
+  }
+
+  /* Nav underline animation */
+  .nav-links a {
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 0%;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* Hero photo subtle entrance */
+  .hero-photo {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: photoIn 0.9s ease 0.15s forwards;
+  }
+  @keyframes photoIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h1.hero-title {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: photoIn 0.8s ease 0s forwards;
+  }
+  .hero-sub {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: photoIn 0.8s ease 0.1s forwards;
+  }
+  .hero-eyebrow {
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* Stat number pulse on reveal */
+  .stat .num { position: relative; }
+
+  /* Exp item stagger via inline delay set by JS */
+
+  /* Skill row fill bar */
+  .skill-row { position: relative; overflow: hidden; }
+  .skill-row::before {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    height: 1px;
+    width: 0%;
+    background: var(--gold);
+    transition: width 0.8s cubic-bezier(.2,.8,.2,1);
+  }
+  .skill-row.in::before { width: 100%; }
+
+  /* Cert card image zoom on hover (in addition to lift) */
+  .cert-thumb img { transition: transform 0.5s ease; }
+  .cert-card:hover .cert-thumb img { transform: scale(1.06); }
+
+  /* Contact row arrow */
+  .contact-row .value::after {
+    content: '↗';
+    display: inline-block;
+    margin-left: 8px;
+    opacity: 0;
+    transform: translate(-4px, 2px);
+    transition: all 0.25s ease;
+    color: var(--gold);
+  }
+  .contact-row:hover .value::after { opacity: 1; transform: translate(0,0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo, h1.hero-title, .hero-sub, .hero-eyebrow { animation: none; opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
 
 <div class="wrap">
 
@@ -329,19 +421,19 @@
 
     <div class="stat-row reveal">
       <div class="stat">
-        <div class="num">587</div>
+        <div class="num" data-count="587" data-suffix="">0</div>
         <div class="label">Skor TOEFL / ELProTe</div>
       </div>
       <div class="stat">
-        <div class="num">1.000+</div>
+        <div class="num" data-count="1000" data-suffix="+" data-format="dot">0</div>
         <div class="label">Nasabah dihubungi / hari (telemarketing)</div>
       </div>
       <div class="stat">
-        <div class="num">4</div>
+        <div class="num" data-count="4" data-suffix="">0</div>
         <div class="label">Sponsor diamankan (organisasi)</div>
       </div>
       <div class="stat">
-        <div class="num">3</div>
+        <div class="num" data-count="3" data-suffix="">0</div>
         <div class="label">Sertifikasi teknis (SQL, Python, R)</div>
       </div>
     </div>
@@ -564,6 +656,23 @@
 </div>
 
 <script>
+  // Scroll progress bar
+  const progressBar = document.getElementById('scrollProgress');
+  function updateProgress() {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressBar.style.width = scrolled + '%';
+  }
+  window.addEventListener('scroll', updateProgress);
+
+  // Stagger reveal delays for timeline items and cert cards
+  document.querySelectorAll('.timeline .exp-item').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.12) + 's';
+  });
+  document.querySelectorAll('.cert-grid .cert-card').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.08) + 's';
+  });
+
   const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -574,6 +683,58 @@
     });
   }, { threshold: 0.12 });
   revealEls.forEach(el => io.observe(el));
+
+  // Skill row underline fill, staggered
+  document.querySelectorAll('.skill-row').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.06) + 's';
+  });
+  const skillIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        skillIo.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.skill-row').forEach(el => skillIo.observe(el));
+
+  // Count-up animation for stat numbers
+  function formatNumber(val, format) {
+    val = Math.round(val);
+    if (format === 'dot') {
+      return val.toLocaleString('id-ID');
+    }
+    return val.toString();
+  }
+  function animateCount(el) {
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const format = el.dataset.format || '';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      el.textContent = formatNumber(target, format) + suffix;
+      return;
+    }
+    const duration = 1400;
+    const start = performance.now();
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      el.textContent = formatNumber(current, format) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  const countIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        countIo.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.num[data-count]').forEach(el => countIo.observe(el));
 
   function openLightbox(src) {
     document.getElementById('lightbox-img').src = src;

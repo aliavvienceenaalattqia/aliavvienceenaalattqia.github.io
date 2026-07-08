@@ -5,31 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ali Avvienceena Al Attqia — Ekonomi Syariah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sacramento&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sacramento&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #F7F5F0;
-    --ink: #1C1A15;
-    --ink-soft: #5A564C;
-    --line: #DBD5C7;
-    --gold: #8A6D2F;
-    --gold-soft: #EFE7D3;
-    --navy: #1B2A38;
+    --bg: #0A0A0A;
+    --bg-alt: #0D1117;
+    --glass: rgba(255,255,255,0.045);
+    --glass-border: rgba(212,175,55,0.28);
+    --glass-border-blue: rgba(0,180,255,0.28);
+    --ink: #F2F3F1;
+    --ink-soft: #98A2AD;
+    --line: rgba(255,255,255,0.09);
+    --gold: #D4AF37;
+    --blue: #00B4FF;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
   body {
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
     font-size: 16px;
-    line-height: 1.55;
+    line-height: 1.6;
+    overflow-x: hidden;
   }
 
   a { color: inherit; text-decoration: none; }
   img { max-width: 100%; display: block; }
+
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+    background-size: 46px 46px;
+    pointer-events: none;
+  }
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
 
   .wrap {
     max-width: 1200px;
@@ -37,96 +58,157 @@
     padding: 0 28px;
   }
 
+  /* NAV */
   nav {
+    position: sticky;
+    top: 0;
+    z-index: 150;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 26px 0;
+    padding: 20px 28px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12.5px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    background: rgba(10,10,10,0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
   }
   .nav-mark {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 19px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.02em;
+    color: var(--ink);
   }
-  .nav-links { display: flex; gap: 26px; color: var(--ink-soft); }
-  .nav-links a:hover { color: var(--gold); }
+  .nav-mark span { color: var(--blue); }
+  .nav-links { display: flex; gap: 28px; color: var(--ink-soft); }
+  .nav-links a { position: relative; padding-bottom: 3px; }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 0%;
+    height: 1px;
+    background: var(--blue);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { width: 100%; }
 
-  .hero { padding: 72px 0 56px; }
+  /* HERO BANNER — full bleed */
+  .hero-banner {
+    position: relative;
+    width: 100%;
+    height: clamp(560px, 84vh, 880px);
+    overflow: hidden;
+  }
+  .hero-banner-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    filter: saturate(0.92) contrast(1.05);
+  }
+  .hero-banner-gradient {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(10,10,10,0.05) 0%, rgba(10,10,10,0.15) 45%, rgba(10,10,10,0.88) 82%, var(--bg) 100%),
+      linear-gradient(to top, transparent 82%, rgba(10,10,10,0.55) 100%);
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.5);
+  }
+  .hero-banner-content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding-bottom: 52px;
+    z-index: 2;
+  }
   .hero-eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12.5px;
-    color: var(--gold);
-    letter-spacing: 0.08em;
+    color: var(--blue);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
     gap: 10px;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 0.3s forwards;
   }
-  .hero-eyebrow::before { content:''; width: 22px; height: 1px; background: var(--gold); }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 48px;
-    align-items: end;
-  }
+  .hero-eyebrow::before { content:''; width: 24px; height: 1px; background: var(--blue); }
+  @keyframes fadeIn { to { opacity: 1; } }
 
   h1.hero-title {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: clamp(38px, 5.4vw, 64px);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(36px, 6.2vw, 68px);
     line-height: 1.05;
     letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: textIn 0.9s ease 0.1s forwards;
   }
-  h1.hero-title em { font-style: italic; color: var(--gold); font-weight: 500; }
-  .hero-sub { margin-top: 22px; max-width: 52ch; font-size: 17px; color: var(--ink-soft); }
-
-  .hero-photo {
-    width: 100%;
-    aspect-ratio: 3/3.6;
-    overflow: hidden;
-    -webkit-mask-image: radial-gradient(ellipse 72% 88% at 50% 38%, black 50%, transparent 100%);
-    mask-image: radial-gradient(ellipse 72% 88% at 50% 38%, black 50%, transparent 100%);
+  h1.hero-title em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--gold), var(--blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
-  .hero-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0.94; }
+  .hero-sub {
+    margin-top: 20px;
+    max-width: 58ch;
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: textIn 0.9s ease 0.25s forwards;
+  }
+  @keyframes textIn { to { opacity: 1; transform: translateY(0); } }
 
+  /* STATS — glassmorphism */
   .stat-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    margin-top: 44px;
+    gap: 14px;
+    margin-top: -70px;
+    position: relative;
+    z-index: 5;
+    padding-bottom: 30px;
   }
-  .stat { padding: 22px 18px; border-right: 1px solid var(--line); }
-  .stat:last-child { border-right: none; }
+  .stat {
+    padding: 22px 18px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
   .stat .num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(22px, 3vw, 32px);
-    color: var(--navy);
+    font-size: clamp(22px, 3vw, 30px);
+    color: var(--gold);
     font-weight: 500;
   }
-  .stat .label { font-size: 12.5px; color: var(--ink-soft); margin-top: 6px; }
+  .stat .label { font-size: 12px; color: var(--ink-soft); margin-top: 8px; line-height: 1.4; }
 
   @media (max-width: 800px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-photo { max-width: 220px; margin: 0 auto; aspect-ratio: 3/3.6; }
-    .stat-row { grid-template-columns: repeat(2, 1fr); }
-    .stat:nth-child(2) { border-right: none; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); margin-top: -50px; }
   }
 
   .section-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: 46px 0 22px;
+    padding: 46px 0 24px;
   }
-  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--gold); }
-  .section-title { font-family: 'Fraunces', serif; font-size: 27px; font-weight: 600; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--blue); }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; }
 
   section { border-top: 1px solid var(--line); }
 
@@ -136,40 +218,51 @@
     gap: 56px;
     padding-bottom: 48px;
   }
-  .about-body p { color: var(--ink-soft); font-size: 16.5px; margin-bottom: 16px; }
+  .about-body p { color: var(--ink-soft); font-size: 16px; margin-bottom: 16px; }
+  .about-body em { color: var(--ink); font-style: italic; }
+  .about-facts {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px 20px;
+  }
   .about-facts div {
     display: flex;
     justify-content: space-between;
-    padding: 13px 0;
+    padding: 14px 0;
     border-bottom: 1px solid var(--line);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 12.5px;
   }
+  .about-facts div:last-child { border-bottom: none; }
+  .about-facts div span:first-child { color: var(--ink-soft); }
   @media (max-width: 800px) { .about-body { grid-template-columns: 1fr; } }
 
   .timeline { padding-bottom: 48px; }
   .exp-item {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 190px 1fr;
     gap: 32px;
     padding: 30px 0;
     border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .6s ease, transform .6s ease;
   }
-  .exp-date { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gold); padding-top: 3px; }
-  .exp-role { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; margin-bottom: 3px; }
-  .exp-org { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 14px; }
+  .exp-item.in { opacity: 1; transform: translateY(0); }
+  .exp-date { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--blue); padding-top: 3px; }
+  .exp-role { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+  .exp-org { font-size: 14px; color: var(--ink-soft); margin-bottom: 14px; }
   .exp-list { list-style: none; }
   .exp-list li {
     position: relative;
     padding-left: 18px;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
     color: var(--ink-soft);
-    font-size: 15px;
+    font-size: 14.5px;
   }
   .exp-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
   .exp-list li strong { color: var(--ink); font-weight: 600; }
-
-  @media (max-width: 700px) { .exp-item { grid-template-columns: 1fr; gap: 8px; } }
 
   .doc-gallery {
     display: grid;
@@ -180,62 +273,110 @@
   .doc-thumb {
     aspect-ratio: 4/3;
     overflow: hidden;
-    border-radius: 3px;
+    border-radius: 8px;
     border: 1px solid var(--line);
     cursor: pointer;
   }
-  .doc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
-  .doc-thumb:hover img { transform: scale(1.05); }
-  @media (max-width: 520px) { .doc-gallery { grid-template-columns: repeat(2, 1fr); } }
+  .doc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+  .doc-thumb:hover img { transform: scale(1.06); }
 
+  @media (max-width: 700px) {
+    .exp-item { grid-template-columns: 1fr; gap: 8px; }
+    .doc-gallery { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* CERT STACK */
+  .cert-stack-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding-bottom: 52px;
+  }
+  .cert-stack-wrap.hidden { display: none; }
+  .cert-stack {
+    position: relative;
+    width: 270px;
+    height: 200px;
+    cursor: pointer;
+  }
+  .stack-item {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.55);
+    transition: transform 0.6s cubic-bezier(.4,0,.2,1), opacity 0.6s ease;
+    background: #111;
+  }
+  .stack-item img { width: 100%; height: 100%; object-fit: cover; }
+  .cert-stack-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--blue);
+    animation: pulseDot 1.6s ease infinite;
+  }
+  @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  .cert-grid-wrap { padding-bottom: 48px; }
+  .cert-grid-wrap.hidden { display: none; }
+  .cert-back-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--blue);
+    margin-bottom: 22px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
   .cert-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding-bottom: 48px;
+    gap: 18px;
   }
   .cert-card {
     border: 1px solid var(--line);
-    border-radius: 3px;
+    border-radius: 10px;
     overflow: hidden;
-    background: #fff;
+    background: var(--glass);
     cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, border-color 0.25s ease;
   }
-  .cert-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(28,26,21,0.08); }
+  .cert-card:hover { transform: translateY(-4px); border-color: var(--glass-border-blue); }
   .cert-thumb { aspect-ratio: 4/3; overflow: hidden; }
-  .cert-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cert-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+  .cert-card:hover .cert-thumb img { transform: scale(1.06); }
   .cert-info { padding: 14px 16px 18px; }
-  .cert-info .cert-name { font-weight: 600; font-size: 14.5px; margin-bottom: 4px; }
-  .cert-info .cert-meta { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink-soft); }
+  .cert-info .cert-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .cert-info .cert-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
   @media (max-width: 800px) { .cert-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 520px) { .cert-grid { grid-template-columns: 1fr; } }
 
   .lightbox {
     position: fixed; inset: 0;
-    background: rgba(20,18,14,0.92);
+    background: rgba(5,5,5,0.94);
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 300;
     padding: 24px;
   }
   .lightbox.open { display: flex; }
-  .lightbox img { max-width: 100%; max-height: 88vh; border-radius: 4px; }
+  .lightbox img { max-width: 100%; max-height: 88vh; border-radius: 8px; }
   .lightbox-close {
     position: absolute; top: 20px; right: 24px;
-    color: #F7F5F0; font-family: 'JetBrains Mono', monospace;
+    color: var(--ink); font-family: 'JetBrains Mono', monospace;
     font-size: 14px; cursor: pointer; letter-spacing: 0.05em;
-  }
-
-  .skills-wrap { padding-bottom: 48px; display: flex; flex-wrap: wrap; gap: 10px; }
-  .skill-chip {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    padding: 9px 16px;
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    color: var(--ink-soft);
   }
 
   .skills-block {
@@ -245,29 +386,41 @@
     gap: 0 40px;
   }
   .skill-row {
+    position: relative;
+    overflow: hidden;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 13px 0;
     border-bottom: 1px solid var(--line);
   }
-  .skill-name { font-size: 15px; }
+  .skill-row::before {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -1px;
+    height: 1px;
+    width: 0%;
+    background: var(--blue);
+    transition: width 2s cubic-bezier(.2,.8,.2,1);
+  }
+  .skill-row.in::before { width: 100%; }
+  .skill-name { font-size: 14.5px; }
   .skill-level {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: 0.04em;
-    padding: 4px 10px;
+    padding: 4px 11px;
     border-radius: 100px;
   }
-  .level-mahir { background: var(--gold-soft); color: var(--gold); }
-  .level-dasar { background: #EFEEEA; color: var(--ink-soft); }
+  .level-mahir { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
+  .level-dasar { background: rgba(255,255,255,0.06); color: var(--ink-soft); border: 1px solid var(--line); }
   @media (max-width: 700px) { .skills-block { grid-template-columns: 1fr; } }
 
   .contact { padding: 60px 0 50px; }
   .contact h2 {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(28px, 5vw, 46px);
-    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 700;
     max-width: 16ch;
     margin-bottom: 30px;
   }
@@ -276,106 +429,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 0;
+    padding: 18px 4px;
     border-bottom: 1px solid var(--line);
   }
-  .contact-row .label { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink-soft); }
-  .contact-row .value { font-family: 'Fraunces', serif; font-size: clamp(16px, 2.4vw, 22px); }
-  .contact-row:hover .value { color: var(--gold); }
-
-  footer {
-    border-top: 1px solid var(--line);
-    padding: 22px 0 40px;
-    display: flex;
-    justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
+  .contact-row .label { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+  .contact-row .value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(16px, 2.4vw, 21px);
+    font-weight: 600;
   }
-
-  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.in { opacity: 1; transform: translateY(0); }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-    html { scroll-behavior: auto; }
-  }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-
-  /* Scroll progress bar */
-  .scroll-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    width: 0%;
-    background: var(--gold);
-    z-index: 200;
-    transition: width 0.1s ease-out;
-  }
-
-  /* Nav underline animation */
-  .nav-links a {
-    position: relative;
-    padding-bottom: 2px;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    left: 0; bottom: -3px;
-    width: 0%;
-    height: 1px;
-    background: var(--gold);
-    transition: width 0.3s ease;
-  }
-  .nav-links a:hover::after { width: 100%; }
-
-  /* Hero photo subtle entrance */
-  .hero-photo {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: photoIn 0.9s ease 0.15s forwards;
-  }
-  @keyframes photoIn {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  h1.hero-title {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: photoIn 0.8s ease 0s forwards;
-  }
-  .hero-sub {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: photoIn 0.8s ease 0.1s forwards;
-  }
-  .hero-eyebrow {
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards;
-  }
-  @keyframes fadeIn { to { opacity: 1; } }
-
-  /* Stat number pulse on reveal */
-  .stat .num { position: relative; }
-
-  /* Exp item stagger via inline delay set by JS */
-
-  /* Skill row fill bar */
-  .skill-row { position: relative; overflow: hidden; }
-  .skill-row::before {
-    content: '';
-    position: absolute;
-    left: 0; bottom: 0;
-    height: 1px;
-    width: 0%;
-    background: var(--gold);
-    transition: width 0.8s cubic-bezier(.2,.8,.2,1);
-  }
-  .skill-row.in::before { width: 100%; }
-
-  /* Cert card image zoom on hover (in addition to lift) */
-  .cert-thumb img { transition: transform 0.5s ease; }
-  .cert-card:hover .cert-thumb img { transform: scale(1.06); }
-
-  /* Contact row arrow */
   .contact-row .value::after {
     content: '↗';
     display: inline-block;
@@ -383,20 +445,40 @@
     opacity: 0;
     transform: translate(-4px, 2px);
     transition: all 0.25s ease;
-    color: var(--gold);
+    color: var(--blue);
   }
+  .contact-row:hover .value { color: var(--blue); }
   .contact-row:hover .value::after { opacity: 1; transform: translate(0,0); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero-photo, h1.hero-title, .hero-sub, .hero-eyebrow { animation: none; opacity: 1; transform: none; }
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 22px 0 40px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--blue));
+    z-index: 400;
+    transition: width 0.1s ease-out;
   }
 
   /* INTRO SCREEN */
   .intro-screen {
     position: fixed;
     inset: 0;
-    background: var(--paper);
-    z-index: 300;
+    background: var(--bg);
+    z-index: 500;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -405,26 +487,30 @@
   .intro-name {
     font-family: 'Sacramento', cursive;
     font-size: clamp(70px, 16vw, 150px);
-    color: var(--ink);
+    background: linear-gradient(90deg, var(--gold), var(--blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     opacity: 0;
     transform: translateY(8px);
     animation: introTextIn 1s ease 0.2s forwards;
   }
-  @keyframes introTextIn {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes introTextIn { to { opacity: 1; transform: translateY(0); } }
   @keyframes introSequence {
     0%   { opacity: 1; }
     18%  { opacity: 1; }
     100% { opacity: 0; visibility: hidden; }
   }
   .intro-screen.done { display: none; }
-
   body.intro-lock { overflow: hidden; height: 100vh; }
 
   @media (prefers-reduced-motion: reduce) {
     .intro-screen { display: none; }
+    .reveal, .exp-item, h1.hero-title, .hero-sub, .hero-eyebrow { opacity: 1; transform: none; animation: none; }
+    .stack-item { transition: none; }
   }
+
+  a:focus-visible, button:focus-visible, .cert-stack:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 </style>
 </head>
 <body class="intro-lock">
@@ -433,50 +519,49 @@
   <div class="intro-name">Avin</div>
 </div>
 
+<div class="grid-overlay"></div>
+<canvas id="starfield"></canvas>
 <div class="scroll-progress" id="scrollProgress"></div>
+
+<nav>
+  <div class="nav-mark">A<span>.</span>A<span>.</span>A</div>
+  <div class="nav-links">
+    <a href="#pengalaman">Pengalaman</a>
+    <a href="#sertifikasi">Sertifikasi</a>
+    <a href="#kontak">Kontak</a>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <img class="hero-banner-img" src="images/profile.jpg" alt="Foto Ali Avvienceena Al Attqia">
+  <div class="hero-banner-gradient"></div>
+  <div class="hero-banner-content wrap">
+    <div class="hero-eyebrow">Ekonomi Syariah — Fresh Graduate</div>
+    <h1 class="hero-title">Ali Avvienceena <em>Al Attqia</em></h1>
+    <p class="hero-sub">Lulusan S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, dengan pengalaman langsung di operasional dan layanan perbankan syariah. Memiliki minat besar pada industri perbankan dan keuangan, serta ingin berkontribusi dalam peningkatan kualitas layanan, operasional perbankan, dan pengelolaan administrasi keuangan yang efektif.</p>
+  </div>
+</section>
 
 <div class="wrap">
 
-  <nav>
-    <div class="nav-mark">A.A.A</div>
-    <div class="nav-links">
-      <a href="#pengalaman">Pengalaman</a>
-      <a href="#sertifikasi">Sertifikasi</a>
-      <a href="#kontak">Kontak</a>
+  <div class="stat-row reveal">
+    <div class="stat">
+      <div class="num" data-count="587" data-suffix="">0</div>
+      <div class="label">Skor TOEFL / ELProTe</div>
     </div>
-  </nav>
-
-  <section class="hero">
-    <div class="hero-eyebrow">Ekonomi Syariah — Fresh Graduate</div>
-    <div class="hero-grid">
-      <div>
-        <h1 class="hero-title">Ali Avvienceena <em>Al Attqia</em></h1>
-        <p class="hero-sub">Lulusan S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, dengan pengalaman langsung di operasional dan layanan perbankan syariah. Memiliki minat besar pada industri perbankan dan keuangan, serta ingin berkontribusi dalam peningkatan kualitas layanan, operasional perbankan, dan pengelolaan administrasi keuangan yang efektif.</p>
-      </div>
-      <div class="hero-photo">
-        <img src="images/profile.jpg" alt="Foto Ali Avvienceena Al Attqia">
-      </div>
+    <div class="stat">
+      <div class="num" data-count="1000" data-suffix="+" data-format="dot">0</div>
+      <div class="label">Nasabah dihubungi / hari (telemarketing)</div>
     </div>
-
-    <div class="stat-row reveal">
-      <div class="stat">
-        <div class="num" data-count="587" data-suffix="">0</div>
-        <div class="label">Skor TOEFL / ELProTe</div>
-      </div>
-      <div class="stat">
-        <div class="num" data-count="1000" data-suffix="+" data-format="dot">0</div>
-        <div class="label">Nasabah dihubungi / hari (telemarketing)</div>
-      </div>
-      <div class="stat">
-        <div class="num" data-count="4" data-suffix="">0</div>
-        <div class="label">Sponsor diamankan (organisasi)</div>
-      </div>
-      <div class="stat">
-        <div class="num" data-count="3" data-suffix="">0</div>
-        <div class="label">Sertifikasi teknis (SQL, Python, R)</div>
-      </div>
+    <div class="stat">
+      <div class="num" data-count="4" data-suffix="">0</div>
+      <div class="label">Sponsor diamankan (organisasi)</div>
     </div>
-  </section>
+    <div class="stat">
+      <div class="num" data-count="3" data-suffix="">0</div>
+      <div class="label">Sertifikasi teknis (SQL, Python, R)</div>
+    </div>
+  </div>
 
   <section id="about">
     <div class="section-head">
@@ -566,64 +651,73 @@
       <span class="section-num">04</span>
       <span class="section-title">Sertifikasi</span>
     </div>
-    <div class="cert-grid">
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-toefl.jpg')">
-        <div class="cert-thumb"><img src="images/cert-toefl.jpg" alt="Sertifikat ELProTe TOEFL"></div>
-        <div class="cert-info">
-          <div class="cert-name">English Language Proficiency Test (ELProTe)</div>
-          <div class="cert-meta">SKOR 587 · FEB 2026</div>
+    <div class="cert-stack-wrap" id="certStackWrap">
+      <div class="cert-stack" id="certStack" role="button" tabindex="0" aria-label="Lihat semua sertifikat"></div>
+      <div class="cert-stack-hint"><span class="pulse-dot"></span> KETUK TUMPUKAN UNTUK LIHAT SEMUA SERTIFIKAT</div>
+    </div>
+
+    <div class="cert-grid-wrap hidden" id="certGridWrap">
+      <div class="cert-back-btn" id="certBackBtn">← Kembali ke tumpukan</div>
+      <div class="cert-grid" id="certGrid">
+
+        <div class="cert-card" data-src="images/cert-toefl.jpg" data-name="English Language Proficiency Test (ELProTe)" data-meta="SKOR 587 · FEB 2026">
+          <div class="cert-thumb"><img src="images/cert-toefl.jpg" alt="Sertifikat ELProTe TOEFL"></div>
+          <div class="cert-info">
+            <div class="cert-name">English Language Proficiency Test (ELProTe)</div>
+            <div class="cert-meta">SKOR 587 · FEB 2026</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-arabic.jpg')">
-        <div class="cert-thumb"><img src="images/cert-arabic.jpg" alt="Sertifikat Bahasa Arab"></div>
-        <div class="cert-info">
-          <div class="cert-name">Tes Kemahiran Bahasa Arab</div>
-          <div class="cert-meta">SKOR 543 · FEB 2026</div>
+        <div class="cert-card" data-src="images/cert-arabic.jpg" data-name="Tes Kemahiran Bahasa Arab" data-meta="SKOR 543 · FEB 2026">
+          <div class="cert-thumb"><img src="images/cert-arabic.jpg" alt="Sertifikat Bahasa Arab"></div>
+          <div class="cert-info">
+            <div class="cert-name">Tes Kemahiran Bahasa Arab</div>
+            <div class="cert-meta">SKOR 543 · FEB 2026</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-sql.jpg')">
-        <div class="cert-thumb"><img src="images/cert-sql.jpg" alt="Sertifikat SQL"></div>
-        <div class="cert-info">
-          <div class="cert-name">Fundamental SQL Using SELECT Statement</div>
-          <div class="cert-meta">DQLAB · APR 2024</div>
+        <div class="cert-card" data-src="images/cert-sql.jpg" data-name="Fundamental SQL Using SELECT Statement" data-meta="DQLAB · APR 2024">
+          <div class="cert-thumb"><img src="images/cert-sql.jpg" alt="Sertifikat SQL"></div>
+          <div class="cert-info">
+            <div class="cert-name">Fundamental SQL Using SELECT Statement</div>
+            <div class="cert-meta">DQLAB · APR 2024</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-python.jpg')">
-        <div class="cert-thumb"><img src="images/cert-python.jpg" alt="Sertifikat Python"></div>
-        <div class="cert-info">
-          <div class="cert-name">Python Fundamental for Data Science</div>
-          <div class="cert-meta">DQLAB · APR 2024</div>
+        <div class="cert-card" data-src="images/cert-python.jpg" data-name="Python Fundamental for Data Science" data-meta="DQLAB · APR 2024">
+          <div class="cert-thumb"><img src="images/cert-python.jpg" alt="Sertifikat Python"></div>
+          <div class="cert-info">
+            <div class="cert-name">Python Fundamental for Data Science</div>
+            <div class="cert-meta">DQLAB · APR 2024</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-r.jpg')">
-        <div class="cert-thumb"><img src="images/cert-r.jpg" alt="Sertifikat R"></div>
-        <div class="cert-info">
-          <div class="cert-name">R Fundamental for Data Science</div>
-          <div class="cert-meta">DQLAB · APR 2024</div>
+        <div class="cert-card" data-src="images/cert-r.jpg" data-name="R Fundamental for Data Science" data-meta="DQLAB · APR 2024">
+          <div class="cert-thumb"><img src="images/cert-r.jpg" alt="Sertifikat R"></div>
+          <div class="cert-info">
+            <div class="cert-name">R Fundamental for Data Science</div>
+            <div class="cert-meta">DQLAB · APR 2024</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-bsi.jpg')">
-        <div class="cert-thumb"><img src="images/cert-bsi.jpg" alt="Sertifikat PKL BSI"></div>
-        <div class="cert-info">
-          <div class="cert-name">Praktek Kerja Lapangan</div>
-          <div class="cert-meta">BANK SYARIAH INDONESIA · 2025</div>
+        <div class="cert-card" data-src="images/cert-bsi.jpg" data-name="Praktek Kerja Lapangan" data-meta="BANK SYARIAH INDONESIA · 2025">
+          <div class="cert-thumb"><img src="images/cert-bsi.jpg" alt="Sertifikat PKL BSI"></div>
+          <div class="cert-info">
+            <div class="cert-name">Praktek Kerja Lapangan</div>
+            <div class="cert-meta">BANK SYARIAH INDONESIA · 2025</div>
+          </div>
         </div>
-      </div>
 
-      <div class="cert-card reveal" onclick="openLightbox('images/cert-petaru.jpg')">
-        <div class="cert-thumb"><img src="images/cert-petaru.jpg" alt="Sertifikat PETARU Senjapreneur"></div>
-        <div class="cert-info">
-          <div class="cert-name">Pelantikan PETARU — Senjapreneur</div>
-          <div class="cert-meta">PESERTA · OKT 2024</div>
+        <div class="cert-card" data-src="images/cert-petaru.jpg" data-name="Pelantikan PETARU — Senjapreneur" data-meta="PESERTA · OKT 2024">
+          <div class="cert-thumb"><img src="images/cert-petaru.jpg" alt="Sertifikat PETARU Senjapreneur"></div>
+          <div class="cert-info">
+            <div class="cert-name">Pelantikan PETARU — Senjapreneur</div>
+            <div class="cert-meta">PESERTA · OKT 2024</div>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
 
     <div class="skills-block reveal">
@@ -695,21 +789,72 @@
 </div>
 
 <script>
-  // Intro screen
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Intro screen ---------- */
   const introScreen = document.getElementById('introScreen');
   const bodyEl = document.body;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let introDone = false;
+  const pendingCounts = [];
+
+  function markIntroDone() {
+    introDone = true;
+    pendingCounts.forEach(el => animateCount(el));
+    pendingCounts.length = 0;
+  }
+
   if (reducedMotion) {
     bodyEl.classList.remove('intro-lock');
     introScreen.classList.add('done');
+    markIntroDone();
   } else {
     introScreen.addEventListener('animationend', () => {
       introScreen.classList.add('done');
       bodyEl.classList.remove('intro-lock');
+      markIntroDone();
     });
   }
 
-  // Scroll progress bar
+  /* ---------- Starfield ---------- */
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function initStars() {
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2 + 0.3,
+      speed: Math.random() * 0.15 + 0.03,
+      alpha: Math.random() * 0.5 + 0.2
+    }));
+  }
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(210,225,255,' + s.alpha + ')';
+      ctx.fill();
+      s.y += s.speed;
+      if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
+    });
+    requestAnimationFrame(drawStars);
+  }
+  resizeCanvas();
+  initStars();
+  if (!reducedMotion) {
+    drawStars();
+  } else {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+
+  /* ---------- Scroll progress ---------- */
   const progressBar = document.getElementById('scrollProgress');
   function updateProgress() {
     const h = document.documentElement;
@@ -718,15 +863,11 @@
   }
   window.addEventListener('scroll', updateProgress);
 
-  // Stagger reveal delays for timeline items and cert cards
+  /* ---------- Reveal on scroll (stagger for timeline) ---------- */
   document.querySelectorAll('.timeline .exp-item').forEach((el, i) => {
     el.style.transitionDelay = (i * 0.12) + 's';
   });
-  document.querySelectorAll('.cert-grid .cert-card').forEach((el, i) => {
-    el.style.transitionDelay = (i * 0.08) + 's';
-  });
-
-  const revealEls = document.querySelectorAll('.reveal');
+  const revealEls = document.querySelectorAll('.reveal, .exp-item');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -737,9 +878,9 @@
   }, { threshold: 0.12 });
   revealEls.forEach(el => io.observe(el));
 
-  // Skill row underline fill, staggered
+  /* ---------- Skill row fill (2s), staggered ---------- */
   document.querySelectorAll('.skill-row').forEach((el, i) => {
-    el.style.transitionDelay = (i * 0.06) + 's';
+    el.style.transitionDelay = (i * 0.08) + 's';
   });
   const skillIo = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -751,30 +892,26 @@
   }, { threshold: 0.3 });
   document.querySelectorAll('.skill-row').forEach(el => skillIo.observe(el));
 
-  // Count-up animation for stat numbers
+  /* ---------- Count-up (slower, gated by intro completion) ---------- */
   function formatNumber(val, format) {
     val = Math.round(val);
-    if (format === 'dot') {
-      return val.toLocaleString('id-ID');
-    }
+    if (format === 'dot') return val.toLocaleString('id-ID');
     return val.toString();
   }
   function animateCount(el) {
     const target = parseFloat(el.dataset.count);
     const suffix = el.dataset.suffix || '';
     const format = el.dataset.format || '';
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) {
+    if (reducedMotion) {
       el.textContent = formatNumber(target, format) + suffix;
       return;
     }
-    const duration = 1400;
+    const duration = 2400;
     const start = performance.now();
     function step(now) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = target * eased;
-      el.textContent = formatNumber(current, format) + suffix;
+      el.textContent = formatNumber(target * eased, format) + suffix;
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -782,13 +919,89 @@
   const countIo = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        animateCount(entry.target);
+        if (introDone) animateCount(entry.target);
+        else pendingCounts.push(entry.target);
         countIo.unobserve(entry.target);
       }
     });
   }, { threshold: 0.5 });
   document.querySelectorAll('.num[data-count]').forEach(el => countIo.observe(el));
 
+  /* ---------- Certificate stack shuffle ---------- */
+  const certCards = Array.from(document.querySelectorAll('#certGrid .cert-card'));
+  const certStack = document.getElementById('certStack');
+  const certStackWrap = document.getElementById('certStackWrap');
+  const certGridWrap = document.getElementById('certGridWrap');
+  const certBackBtn = document.getElementById('certBackBtn');
+
+  const stackItems = certCards.map((card, i) => {
+    const div = document.createElement('div');
+    div.className = 'stack-item';
+    const img = document.createElement('img');
+    img.src = card.dataset.src;
+    img.alt = card.dataset.name;
+    div.appendChild(img);
+    certStack.appendChild(div);
+    return div;
+  });
+
+  let order = stackItems.map((_, i) => i);
+  function renderStack() {
+    order.forEach((cardIndex, depth) => {
+      const el = stackItems[cardIndex];
+      const rot = depth === 0 ? 0 : (depth % 2 === 0 ? 1 : -1) * (2 + depth * 1.5);
+      el.style.transform = `translate(${depth * 3}px, ${depth * -5}px) rotate(${rot}deg) scale(${1 - depth * 0.03})`;
+      el.style.zIndex = stackItems.length - depth;
+      el.style.opacity = String(1 - depth * 0.07);
+    });
+  }
+  renderStack();
+
+  let shuffleInterval = null;
+  function startShuffle() {
+    if (reducedMotion) return;
+    shuffleInterval = setInterval(() => {
+      order.push(order.shift());
+      renderStack();
+    }, 900);
+  }
+  function stopShuffle() {
+    clearInterval(shuffleInterval);
+  }
+  startShuffle();
+
+  function showGrid() {
+    stopShuffle();
+    certStackWrap.classList.add('hidden');
+    certGridWrap.classList.remove('hidden');
+    certGridWrap.querySelectorAll('.cert-card').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(16px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      el.style.transitionDelay = (i * 0.07) + 's';
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  }
+  function showStack() {
+    certGridWrap.classList.add('hidden');
+    certStackWrap.classList.remove('hidden');
+    order = stackItems.map((_, i) => i);
+    renderStack();
+    startShuffle();
+  }
+
+  certStack.addEventListener('click', showGrid);
+  certStack.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') showGrid(); });
+  certBackBtn.addEventListener('click', showStack);
+
+  certCards.forEach(card => {
+    card.addEventListener('click', () => openLightbox(card.dataset.src));
+  });
+
+  /* ---------- Lightbox ---------- */
   function openLightbox(src) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('lightbox').classList.add('open');

@@ -45,6 +45,19 @@
     background-size: 46px 46px;
     pointer-events: none;
   }
+  .batik-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    opacity: 0.06;
+    pointer-events: none;
+    background-image:
+      radial-gradient(ellipse 9px 15px at 50% 0%, var(--gold), transparent 72%),
+      radial-gradient(ellipse 9px 15px at 50% 100%, var(--gold), transparent 72%),
+      radial-gradient(ellipse 15px 9px at 0% 50%, var(--gold), transparent 72%),
+      radial-gradient(ellipse 15px 9px at 100% 50%, var(--gold), transparent 72%);
+    background-size: 46px 46px;
+  }
   #starfield {
     position: fixed;
     inset: 0;
@@ -81,21 +94,106 @@
     font-size: 17px;
     letter-spacing: 0.02em;
     color: var(--ink);
+    cursor: pointer;
   }
   .nav-mark span { color: var(--blue); }
-  .nav-links { display: flex; gap: 28px; color: var(--ink-soft); }
-  .nav-links a { position: relative; padding-bottom: 3px; }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    left: 0; bottom: -3px;
-    width: 0%;
-    height: 1px;
-    background: var(--blue);
-    transition: width 0.3s ease;
+
+  .hamburger-btn {
+    width: 26px;
+    height: 18px;
+    position: relative;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
   }
-  .nav-links a:hover { color: var(--ink); }
-  .nav-links a:hover::after { width: 100%; }
+  .hamburger-btn span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: var(--ink);
+    transition: all 0.3s ease;
+  }
+  .hamburger-btn span:nth-child(1) { top: 0; }
+  .hamburger-btn span:nth-child(2) { top: 8px; }
+  .hamburger-btn span:nth-child(3) { top: 16px; }
+  .hamburger-btn.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .hamburger-btn.active span:nth-child(2) { opacity: 0; }
+  .hamburger-btn.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  /* MENU OVERLAY */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,10,0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 250;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    overflow-y: auto;
+  }
+  .menu-overlay.open { opacity: 1; visibility: visible; }
+  .menu-overlay-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 28px 60px;
+  }
+  .menu-links { display: flex; flex-direction: column; gap: 4px; margin-bottom: 60px; }
+  .menu-links a {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(30px, 6vw, 48px);
+    font-weight: 700;
+    color: var(--ink-soft);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: color 0.25s ease;
+  }
+  .menu-overlay.open .menu-links a {
+    animation: menuItemIn 0.5s ease forwards;
+  }
+  .menu-links a:hover { color: var(--ink); }
+  .menu-links a span { color: var(--blue); margin-right: 14px; font-family: 'JetBrains Mono', monospace; font-size: 14px; vertical-align: middle; }
+  @keyframes menuItemIn { to { opacity: 1; transform: translateY(0); } }
+
+  .menu-preview-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+  }
+  .menu-preview-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .menu-preview-card .mp-name { color: var(--ink); font-weight: 500; }
+  .menu-preview-card .mp-arrow { color: var(--blue); }
+
+  .menu-close-btn {
+    position: absolute;
+    top: 26px;
+    right: 28px;
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  body.menu-lock { overflow: hidden; }
 
   /* HERO BANNER — full bleed */
   .hero-banner {
@@ -279,6 +377,7 @@
   }
   .doc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
   .doc-thumb:hover img { transform: scale(1.06); }
+  .doc-gallery-single { grid-template-columns: minmax(160px, 260px); }
 
   @media (max-width: 700px) {
     .exp-item { grid-template-columns: 1fr; gap: 8px; }
@@ -524,13 +623,29 @@
 <div class="scroll-progress" id="scrollProgress"></div>
 
 <nav>
-  <div class="nav-mark">A<span>.</span>A<span>.</span>A</div>
-  <div class="nav-links">
-    <a href="#pengalaman">Pengalaman</a>
-    <a href="#sertifikasi">Sertifikasi</a>
-    <a href="#kontak">Kontak</a>
-  </div>
+  <div class="nav-mark" onclick="window.location.href='index.html'">A<span>.</span>A<span>.</span>A</div>
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="menu-overlay" id="menuOverlay">
+  <button class="menu-close-btn" id="menuCloseBtn" aria-label="Tutup menu">✕</button>
+  <div class="menu-overlay-inner">
+    <div class="menu-links">
+      <a href="index.html#about"><span>01</span>Profil</a>
+      <a href="index.html#pengalaman"><span>02</span>Pengalaman</a>
+      <a href="index.html#sertifikasi"><span>03</span>Sertifikasi</a>
+      <a href="sharing.html"><span>04</span>Sharing with Avin</a>
+      <a href="index.html#kontak"><span>05</span>Kontak</a>
+    </div>
+    <div class="menu-preview-title">Karya Terbaru — Sharing with Avin</div>
+    <a class="menu-preview-card" href="sharing.html">
+      <span class="mp-name">Panduan Interview Bahasa Inggris</span>
+      <span class="mp-arrow">→</span>
+    </a>
+  </div>
+</div>
 
 <section class="hero-banner">
   <img class="hero-banner-img" src="images/profile.jpg" alt="Foto Ali Avvienceena Al Attqia">
@@ -620,6 +735,9 @@
             <li>Bertanggung jawab atas <strong>Store Requisition</strong> — mencatat dan mengajukan kebutuhan barang operasional untuk setiap acara.</li>
             <li>Turut menangani event berskala besar, termasuk acara dari <strong>Pertamina dengan kapasitas 500 pack</strong>.</li>
           </ul>
+          <div class="doc-gallery doc-gallery-single">
+            <div class="doc-thumb" onclick="openLightbox('images/patra-jasa-doc.jpg')"><img src="images/patra-jasa-doc.jpg" alt="Dokumentasi kegiatan di PT Patra Jasa"></div>
+          </div>
         </div>
       </div>
 
@@ -814,6 +932,32 @@
       markIntroDone();
     });
   }
+
+  /* ---------- Hamburger menu overlay ---------- */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const menuOverlay = document.getElementById('menuOverlay');
+  const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+  function openMenu() {
+    menuOverlay.classList.add('open');
+    hamburgerBtn.classList.add('active');
+    bodyEl.classList.add('menu-lock');
+    menuOverlay.querySelectorAll('.menu-links a').forEach((el, i) => {
+      el.style.animationDelay = (i * 0.07) + 's';
+    });
+  }
+  function closeMenu() {
+    menuOverlay.classList.remove('open');
+    hamburgerBtn.classList.remove('active');
+    bodyEl.classList.remove('menu-lock');
+  }
+  hamburgerBtn.addEventListener('click', () => {
+    if (menuOverlay.classList.contains('open')) closeMenu(); else openMenu();
+  });
+  menuCloseBtn.addEventListener('click', closeMenu);
+  menuOverlay.querySelectorAll('.menu-links a, .menu-preview-card').forEach(a => {
+    a.addEventListener('click', () => { closeMenu(); });
+  });
 
   /* ---------- Starfield ---------- */
   const canvas = document.getElementById('starfield');

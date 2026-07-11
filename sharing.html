@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sharing with Avin — Ali Avvienceena Al Attqia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sacramento&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0A0A0A;
@@ -59,21 +59,95 @@
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
   }
+  .nav-mark-wrap { cursor: pointer; line-height: 1.1; }
   .nav-mark {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: 17px;
     letter-spacing: 0.02em;
     color: var(--ink);
-    cursor: pointer;
   }
   .nav-mark span { color: var(--blue); }
-  .nav-back {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    color: var(--ink-soft);
+  .nav-mark-sub {
+    font-family: 'Sacramento', cursive;
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: -2px;
   }
-  .nav-back:hover { color: var(--blue); }
+  .hamburger-btn {
+    width: 26px;
+    height: 18px;
+    position: relative;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .hamburger-btn span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: var(--ink);
+    transition: all 0.3s ease;
+  }
+  .hamburger-btn span:nth-child(1) { top: 0; }
+  .hamburger-btn span:nth-child(2) { top: 8px; }
+  .hamburger-btn span:nth-child(3) { top: 16px; }
+  .hamburger-btn.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .hamburger-btn.active span:nth-child(2) { opacity: 0; }
+  .hamburger-btn.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  /* MENU OVERLAY */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,10,0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 250;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    overflow-y: auto;
+  }
+  .menu-overlay.open { opacity: 1; visibility: visible; }
+  .menu-overlay-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 28px 60px;
+  }
+  .menu-links { display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px; }
+  .menu-links a {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(30px, 6vw, 48px);
+    font-weight: 700;
+    color: var(--ink-soft);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: color 0.25s ease;
+  }
+  .menu-overlay.open .menu-links a {
+    animation: menuItemIn 0.5s ease forwards;
+  }
+  .menu-links a:hover { color: var(--ink); }
+  .menu-links a .menu-icon { margin-right: 18px; font-size: 0.7em; vertical-align: middle; }
+  @keyframes menuItemIn { to { opacity: 1; transform: translateY(0); } }
+
+  .menu-close-btn {
+    position: absolute;
+    top: 26px;
+    right: 28px;
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  body.menu-lock { overflow: hidden; }
 
   /* HERO */
   .hero-banner {
@@ -145,6 +219,15 @@
   .section-num { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--blue); }
   .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; }
   .section-count { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+  .section-head-right { display: flex; align-items: center; gap: 16px; }
+  .line-art {
+    color: var(--gold);
+    opacity: 0.5;
+    width: 48px;
+    height: auto;
+    flex-shrink: 0;
+  }
+  @media (max-width: 600px) { .line-art { width: 34px; } }
 
   /* KARYA CARD */
   .karya-list { padding-bottom: 60px; display: flex; flex-direction: column; gap: 18px; }
@@ -275,9 +358,25 @@
 <div class="grid-overlay"></div>
 
 <nav>
-  <div class="nav-mark" onclick="window.location.href='index.html'">A<span>.</span>A<span>.</span>A</div>
-  <a class="nav-back" href="index.html">← Kembali ke Beranda</a>
+  <div class="nav-mark-wrap" onclick="window.location.href='index.html'">
+    <div class="nav-mark">A<span>.</span>A<span>.</span>A<span>.</span>A</div>
+    <div class="nav-mark-sub">Avin</div>
+  </div>
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="menu-overlay" id="menuOverlay">
+  <button class="menu-close-btn" id="menuCloseBtn" aria-label="Tutup menu">✕</button>
+  <div class="menu-overlay-inner">
+    <div class="menu-links">
+      <a href="index.html"><span class="menu-icon">👤</span>Profil</a>
+      <a href="sharing.html"><span class="menu-icon">📖</span>Sharing with Avin</a>
+      <a href="buat-cv.html"><span class="menu-icon">📄</span>Buat CV with Avin</a>
+    </div>
+  </div>
+</div>
 
 <section class="hero-banner">
   <img class="hero-banner-img" src="images/bsi-doc-1.jpg" alt="Suasana kerja dan berbagi pengetahuan">
@@ -294,7 +393,14 @@
   <div class="section-head reveal">
     <span class="section-num">01</span>
     <span class="section-title">Daftar Karya</span>
-    <span class="section-count">1 karya</span>
+    <div class="section-head-right">
+      <span class="section-count">1 karya</span>
+      <svg class="line-art line-art-book" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M100 30 C90 22 68 16 48 20 C40 22 34 26 34 32 L34 96 C34 90 42 86 50 84 C68 80 88 86 100 96 C112 86 132 80 150 84 C158 86 166 90 166 96 L166 32 C166 26 160 22 152 20 C132 16 110 22 100 30 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M100 30 L100 96" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M120 50 L168 18 C172 15 178 17 178 22 L178 30 C178 33 176 35 174 37 L128 66" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </div>
 
   <div class="karya-list">
@@ -339,6 +445,32 @@
 </div>
 
 <script>
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const menuOverlay = document.getElementById('menuOverlay');
+  const menuCloseBtn = document.getElementById('menuCloseBtn');
+  const bodyEl = document.body;
+
+  function openMenu() {
+    menuOverlay.classList.add('open');
+    hamburgerBtn.classList.add('active');
+    bodyEl.classList.add('menu-lock');
+    menuOverlay.querySelectorAll('.menu-links a').forEach((el, i) => {
+      el.style.animationDelay = (i * 0.07) + 's';
+    });
+  }
+  function closeMenu() {
+    menuOverlay.classList.remove('open');
+    hamburgerBtn.classList.remove('active');
+    bodyEl.classList.remove('menu-lock');
+  }
+  hamburgerBtn.addEventListener('click', () => {
+    if (menuOverlay.classList.contains('open')) closeMenu(); else openMenu();
+  });
+  menuCloseBtn.addEventListener('click', closeMenu);
+  menuOverlay.querySelectorAll('.menu-links a').forEach(a => {
+    a.addEventListener('click', () => { closeMenu(); });
+  });
+
   const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {

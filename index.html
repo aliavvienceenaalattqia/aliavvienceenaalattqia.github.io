@@ -88,15 +88,39 @@
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
   }
+  .nav-mark-wrap { cursor: pointer; line-height: 1.1; }
   .nav-mark {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: 17px;
     letter-spacing: 0.02em;
     color: var(--ink);
-    cursor: pointer;
   }
   .nav-mark span { color: var(--blue); }
+  .nav-mark-sub {
+    font-family: 'Sacramento', cursive;
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: -2px;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-links { display: flex; gap: 26px; color: var(--ink-soft); }
+  .nav-links a { position: relative; padding-bottom: 3px; }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 0%;
+    height: 1px;
+    background: var(--blue);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { width: 100%; }
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+  }
 
   .hamburger-btn {
     width: 26px;
@@ -157,7 +181,7 @@
     animation: menuItemIn 0.5s ease forwards;
   }
   .menu-links a:hover { color: var(--ink); }
-  .menu-links a span { color: var(--blue); margin-right: 14px; font-family: 'JetBrains Mono', monospace; font-size: 14px; vertical-align: middle; }
+  .menu-links a .menu-icon { margin-right: 18px; font-size: 0.7em; vertical-align: middle; }
   @keyframes menuItemIn { to { opacity: 1; transform: translateY(0); } }
 
   .menu-preview-title {
@@ -220,9 +244,9 @@
     box-shadow: inset 0 0 120px rgba(0,0,0,0.5);
   }
   .hero-banner-content {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    padding-bottom: 52px;
+    position: relative;
+    margin-top: -150px;
+    padding-bottom: 36px;
     z-index: 2;
   }
   .hero-eyebrow {
@@ -274,7 +298,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
-    margin-top: -70px;
+    margin-top: 8px;
     position: relative;
     z-index: 5;
     padding-bottom: 30px;
@@ -296,7 +320,8 @@
   .stat .label { font-size: 12px; color: var(--ink-soft); margin-top: 8px; line-height: 1.4; }
 
   @media (max-width: 800px) {
-    .stat-row { grid-template-columns: repeat(2, 1fr); margin-top: -50px; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); margin-top: 6px; }
+    .hero-banner-content { margin-top: -100px; }
   }
 
   .section-head {
@@ -307,6 +332,17 @@
   }
   .section-num { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--blue); }
   .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; }
+
+  .line-art {
+    color: var(--gold);
+    opacity: 0.5;
+    width: 56px;
+    height: auto;
+    flex-shrink: 0;
+  }
+  @media (max-width: 600px) {
+    .line-art { width: 38px; }
+  }
 
   section { border-top: 1px solid var(--line); }
 
@@ -623,21 +659,29 @@
 <div class="scroll-progress" id="scrollProgress"></div>
 
 <nav>
-  <div class="nav-mark" onclick="window.location.href='index.html'">A<span>.</span>A<span>.</span>A</div>
-  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="nav-mark-wrap" onclick="window.location.href='index.html'">
+    <div class="nav-mark">A<span>.</span>A<span>.</span>A<span>.</span>A</div>
+    <div class="nav-mark-sub">Avin</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#about">Profil</a>
+      <a href="#pengalaman">Pengalaman</a>
+      <a href="#sertifikasi">Sertifikasi</a>
+      <a href="#kontak">Kontak</a>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
 <div class="menu-overlay" id="menuOverlay">
   <button class="menu-close-btn" id="menuCloseBtn" aria-label="Tutup menu">✕</button>
   <div class="menu-overlay-inner">
     <div class="menu-links">
-      <a href="index.html#about"><span>01</span>Profil</a>
-      <a href="index.html#pengalaman"><span>02</span>Pengalaman</a>
-      <a href="index.html#sertifikasi"><span>03</span>Sertifikasi</a>
-      <a href="sharing.html"><span>04</span>Sharing with Avin</a>
-      <a href="index.html#kontak"><span>05</span>Kontak</a>
+      <a href="sharing.html"><span class="menu-icon">📖</span>Sharing with Avin</a>
+      <a href="buat-cv.html"><span class="menu-icon">📄</span>Buat CV with Avin</a>
     </div>
     <div class="menu-preview-title">Karya Terbaru — Sharing with Avin</div>
     <a class="menu-preview-card" href="sharing.html">
@@ -650,12 +694,13 @@
 <section class="hero-banner">
   <img class="hero-banner-img" src="images/profile.jpg" alt="Foto Ali Avvienceena Al Attqia">
   <div class="hero-banner-gradient"></div>
-  <div class="hero-banner-content wrap">
-    <div class="hero-eyebrow">Ekonomi Syariah — Fresh Graduate</div>
-    <h1 class="hero-title">Ali Avvienceena <em>Al Attqia</em></h1>
-    <p class="hero-sub">Lulusan S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, dengan pengalaman langsung di operasional dan layanan perbankan syariah. Memiliki minat besar pada industri perbankan dan keuangan, serta ingin berkontribusi dalam peningkatan kualitas layanan, operasional perbankan, dan pengelolaan administrasi keuangan yang efektif.</p>
-  </div>
 </section>
+
+<div class="hero-banner-content wrap">
+  <div class="hero-eyebrow">Ekonomi Syariah — Fresh Graduate</div>
+  <h1 class="hero-title">Ali Avvienceena <em>Al Attqia</em></h1>
+  <p class="hero-sub">Lulusan S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, dengan pengalaman langsung di operasional dan layanan perbankan syariah. Memiliki minat besar pada industri perbankan dan keuangan, serta ingin berkontribusi dalam peningkatan kualitas layanan, operasional perbankan, dan pengelolaan administrasi keuangan yang efektif.</p>
+</div>
 
 <div class="wrap">
 
@@ -682,6 +727,9 @@
     <div class="section-head">
       <span class="section-num">01</span>
       <span class="section-title">Profil</span>
+      <svg class="line-art line-art-face" viewBox="0 0 200 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M40 150 C35 120 35 95 50 75 C58 64 68 56 82 54 C78 44 82 32 92 26 C104 19 120 22 128 34 C134 43 133 54 127 62 C138 66 147 76 148 90 C149 102 143 112 133 117 C140 124 143 134 140 144 C137 154 128 160 118 158 C122 148 119 138 111 132 C104 138 94 140 86 136 C88 146 84 156 75 160 C65 164 55 159 51 150" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
     <div class="about-body">
       <div class="reveal">

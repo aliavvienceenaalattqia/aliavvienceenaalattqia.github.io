@@ -202,6 +202,46 @@
     font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 14px;
   }
 
+  /* CONFIRM MODAL */
+  .confirm-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .confirm-overlay.show { display: flex; }
+  .confirm-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--glass-border-blue);
+    border-radius: 14px;
+    padding: 30px 26px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    animation: confirmPop 0.25s ease;
+  }
+  @keyframes confirmPop {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .confirm-emoji { font-size: 34px; margin-bottom: 12px; }
+  .confirm-text {
+    font-size: 15px; color: var(--ink); line-height: 1.6; margin-bottom: 24px;
+  }
+  .confirm-actions { display: flex; gap: 10px; }
+  .confirm-btn-secondary {
+    flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-soft);
+    background: none; border: 1px solid var(--line); border-radius: 100px;
+    padding: 12px 16px; cursor: pointer;
+  }
+  .confirm-btn-primary {
+    flex: 1; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14.5px;
+    color: #0A0A0A; background: linear-gradient(90deg, var(--gold), #e8c869);
+    border: none; border-radius: 100px; padding: 12px 16px; cursor: pointer;
+  }
+
   /* LOADING STATE */
   .loading-screen {
     display: none;
@@ -270,7 +310,14 @@
   .ai-note {
     font-size: 12px; color: var(--ink-soft); background: var(--glass);
     border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin-bottom: 20px;
+    min-height: 34px; display: flex; align-items: center;
   }
+  .typing-cursor {
+    display: inline-block; width: 2px; height: 13px;
+    background: var(--blue); margin-left: 2px;
+    animation: cursorBlink 0.8s steps(1) infinite;
+  }
+  @keyframes cursorBlink { 50% { opacity: 0; } }
 
   /* CV PAPER (ATS style, black/white, printable) */
   .cv-paper {
@@ -366,15 +413,15 @@
     <div class="field-group">
       <div class="field-label">Nama Lengkap <span class="required-mark">●</span></div>
       <div class="field-entry">
-        <input type="text" id="inputNama" placeholder="Contoh: Ali Avvienceena Al Attqia" maxlength="80">
+        <input type="text" id="inputNama" placeholder="Ketik nama lengkap kamu untuk tampil di CV" maxlength="80">
       </div>
     </div>
 
     <div class="field-group">
       <div class="field-label">Kontak <span class="required-mark">●</span></div>
-      <div class="field-hint">Pisahkan dengan tanda koma (,)</div>
+      <div class="field-hint">Contoh: 08xxxxxxxxxx, contoh@gmail.com, linkedin.com/in/nama — pisahkan dengan tanda koma (,)</div>
       <div class="field-entry">
-        <input type="text" id="inputKontak" placeholder="Contoh: 08xxxxxxxxxx, contoh@gmail.com, linkedin.com/in/nama" maxlength="200">
+        <input type="text" id="inputKontak" placeholder="Ketik kontak kamu yang ingin ditampilkan di CV" maxlength="200">
       </div>
     </div>
 
@@ -388,46 +435,50 @@
 
     <div class="field-group" data-category="pendidikan">
       <div class="field-label">Pendidikan <span class="required-mark">●</span></div>
+      <div class="field-hint">Contoh: S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, 2022–2026, IPK 3.7</div>
       <div class="entries-wrap" id="wrapPendidikan">
         <div class="field-entry">
-          <textarea placeholder="Contoh: S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, 2022–2026, IPK 3.7" maxlength="500"></textarea>
+          <textarea placeholder="Ketik pendidikan kamu yang akan ditampilkan di CV" maxlength="500"></textarea>
           <span class="char-count">0/500</span>
         </div>
       </div>
-      <button class="add-btn" onclick="addEntry('wrapPendidikan', 'Contoh: S2 Manajemen, Universitas Indonesia')">+ Tambah pendidikan lain</button>
+      <button class="add-btn" onclick="addEntry('wrapPendidikan', 'Ketik pendidikan kamu yang akan ditampilkan di CV')">+ Tambah pendidikan lain</button>
     </div>
 
     <div class="field-group" data-category="pengalaman_kerja">
       <div class="field-label">Pengalaman Kerja <span class="required-mark">●</span></div>
+      <div class="field-hint">Contoh: Magang di Bank Syariah Indonesia sebagai Customer Service, Februari–Juni 2025, tugasnya melayani nasabah dan...</div>
       <div class="entries-wrap" id="wrapPengalamanKerja">
         <div class="field-entry">
-          <textarea placeholder="Contoh: Magang di Bank Syariah Indonesia sebagai Customer Service, Februari–Juni 2025, tugasnya melayani nasabah dan..." maxlength="500"></textarea>
-          <span class="char-count">0/500</span>
+          <textarea placeholder="Pernah kerja di mana dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut"></textarea>
+          <span class="char-count">0 karakter</span>
         </div>
       </div>
-      <button class="add-btn" onclick="addEntry('wrapPengalamanKerja', 'Contoh: Banquet Staff di PT Patra Jasa, tugasnya...')">+ Tambah pengalaman lain</button>
+      <button class="add-btn" onclick="addEntry('wrapPengalamanKerja', 'Pernah kerja di mana dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut', true)">+ Tambah pengalaman lain</button>
     </div>
 
     <div class="field-group" data-category="pengalaman_organisasi">
       <div class="field-label">Pengalaman Organisasi <span class="optional-tag">Opsional</span></div>
+      <div class="field-hint">Contoh: Dana Usaha di UKM Senjapreneur, 2024, tugasnya mengelola keuangan program...</div>
       <div class="entries-wrap" id="wrapOrganisasi">
         <div class="field-entry">
-          <textarea placeholder="Contoh: Dana Usaha di UKM Senjapreneur, 2024, tugasnya mengelola keuangan program..." maxlength="500"></textarea>
-          <span class="char-count">0/500</span>
+          <textarea placeholder="Pernah aktif di organisasi apa dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut"></textarea>
+          <span class="char-count">0 karakter</span>
         </div>
       </div>
-      <button class="add-btn" onclick="addEntry('wrapOrganisasi', 'Contoh: Sekretaris HMJ, 2023...')">+ Tambah organisasi lain</button>
+      <button class="add-btn" onclick="addEntry('wrapOrganisasi', 'Pernah aktif di organisasi apa dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut', true)">+ Tambah organisasi lain</button>
     </div>
 
     <div class="field-group" data-category="sertifikat">
       <div class="field-label">Sertifikat <span class="optional-tag">Opsional</span></div>
+      <div class="field-hint">Contoh: TOEFL ELProTe skor 587, Februari 2026</div>
       <div class="entries-wrap" id="wrapSertifikat">
         <div class="field-entry">
-          <textarea placeholder="Contoh: TOEFL ELProTe skor 587, Februari 2026" maxlength="300"></textarea>
+          <textarea placeholder="Nama sertifikat, lembaganya (apabila ada), skornya (apabila ada), dan kapan kamu mendapatkannya" maxlength="300"></textarea>
           <span class="char-count">0/300</span>
         </div>
       </div>
-      <button class="add-btn" onclick="addEntry('wrapSertifikat', 'Contoh: Sertifikat SQL DQLab, April 2024')">+ Tambah sertifikat lain</button>
+      <button class="add-btn" onclick="addEntry('wrapSertifikat', 'Nama sertifikat, lembaganya (apabila ada), skornya (apabila ada), dan kapan kamu mendapatkannya')">+ Tambah sertifikat lain</button>
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Buat CV Saya</button>
@@ -442,6 +493,18 @@
     <div class="loading-text">Menganalisis pengalamanmu...</div>
   </section>
 
+  <!-- ============ CONFIRM MODAL ============ -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="confirm-emoji">🧐</div>
+      <div class="confirm-text">Apakah data sudah kamu isi dengan benar? Tolong perhatikan lagi ya!</div>
+      <div class="confirm-actions">
+        <button class="confirm-btn-secondary" onclick="closeConfirm()">Cek lagi</button>
+        <button class="confirm-btn-primary" onclick="confirmAndGenerate()">Ya!</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ ERROR ============ -->
   <section class="error-screen" id="errorScreen">
     <div class="error-emoji">:(</div>
@@ -455,7 +518,7 @@
       <button class="edit-again-btn" onclick="backToForm()">← Edit lagi</button>
       <button class="download-btn" onclick="window.print()">⬇ Download PDF</button>
     </div>
-    <div class="ai-note">🤖 Hasil ini dibuat AI berdasarkan input kamu — cek kembali sebelum dipakai melamar kerja, ya.</div>
+    <div class="ai-note" id="aiNote"></div>
     <div class="cv-paper" id="cvPaper"></div>
   </section>
 
@@ -491,16 +554,24 @@
   const PROXY_URL = "https://aliavvienceenaalattqia--351b029e7d6c11f18f8e1607ee4eb77e.web.val.run";
 
   /* ============ Dynamic entries (tombol + Tambah) ============ */
-  function addEntry(wrapId, placeholder) {
+  function addEntry(wrapId, placeholder, unlimited) {
     const wrap = document.getElementById(wrapId);
     const div = document.createElement('div');
     div.className = 'field-entry';
-    const maxlen = wrapId === 'wrapSertifikat' ? 300 : 500;
-    div.innerHTML = `
-      <textarea placeholder="${placeholder}" maxlength="${maxlen}"></textarea>
-      <span class="char-count">0/${maxlen}</span>
-      <button class="remove-entry-btn" onclick="this.parentElement.remove()">✕ Hapus entri ini</button>
-    `;
+    if (unlimited) {
+      div.innerHTML = `
+        <textarea placeholder="${placeholder}"></textarea>
+        <span class="char-count">0 karakter</span>
+        <button class="remove-entry-btn" onclick="this.parentElement.remove()">✕ Hapus entri ini</button>
+      `;
+    } else {
+      const maxlen = wrapId === 'wrapSertifikat' ? 300 : 500;
+      div.innerHTML = `
+        <textarea placeholder="${placeholder}" maxlength="${maxlen}"></textarea>
+        <span class="char-count">0/${maxlen}</span>
+        <button class="remove-entry-btn" onclick="this.parentElement.remove()">✕ Hapus entri ini</button>
+      `;
+    }
     wrap.appendChild(div);
     bindCharCount(div.querySelector('textarea'));
   }
@@ -509,7 +580,11 @@
     const counter = el.parentElement.querySelector('.char-count');
     if (!counter) return;
     el.addEventListener('input', () => {
-      counter.textContent = `${el.value.length}/${el.maxLength}`;
+      if (el.maxLength && el.maxLength > 0) {
+        counter.textContent = `${el.value.length}/${el.maxLength}`;
+      } else {
+        counter.textContent = `${el.value.length} karakter`;
+      }
     });
   }
   document.querySelectorAll('.field-entry textarea').forEach(bindCharCount);
@@ -530,6 +605,8 @@
     document.querySelectorAll('.field-entry.error').forEach(el => el.classList.remove('error'));
     document.getElementById('formWarning').classList.remove('show');
   }
+
+  let pendingCVData = null;
 
   function handleSubmit() {
     clearErrors();
@@ -553,7 +630,20 @@
       return;
     }
 
-    generateCV({ nama, kontak, posisi, pendidikanEntries, kerjaEntries, orgEntries, sertifEntries });
+    pendingCVData = { nama, kontak, posisi, pendidikanEntries, kerjaEntries, orgEntries, sertifEntries };
+    document.getElementById('confirmOverlay').classList.add('show');
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+  }
+
+  function confirmAndGenerate() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+    if (pendingCVData) {
+      generateCV(pendingCVData);
+      pendingCVData = null;
+    }
   }
 
   function markError(inputId, wrapId) {
@@ -707,7 +797,29 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   function showResult() {
     document.getElementById('loadingScreen').classList.remove('show');
     document.getElementById('resultSection').classList.add('show');
+    typeWriter('aiNote', 'Jika hasilnya belum memuaskan, kamu hanya perlu mengklik tombol kembali ke form dan edit.');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function typeWriter(elId, text, speed) {
+    speed = speed || 22;
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    let i = 0;
+    function step() {
+      if (i <= text.length) {
+        el.textContent = text.slice(0, i);
+        el.appendChild(cursor);
+        i++;
+        setTimeout(step, speed);
+      } else {
+        cursor.remove();
+      }
+    }
+    step();
   }
   function showError() {
     document.getElementById('loadingScreen').classList.remove('show');

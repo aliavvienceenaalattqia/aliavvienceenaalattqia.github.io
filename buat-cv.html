@@ -429,7 +429,7 @@
 
     <div class="field-group">
       <div class="field-label">Posisi yang Dilamar <span class="optional-tag">Opsional</span></div>
-      <div class="field-hint">Mengisi ini membantu AI menyesuaikan bahasa CV agar lebih relevan dengan posisi incaranmu — hasilnya akan jauh lebih tajam.</div>
+      <div class="field-hint">Mengisi ini membantu AI menyesuaikan nada bahasa CV agar lebih relevan dengan posisi incaranmu — teks ini tidak akan dicetak langsung di CV, hanya jadi panduan gaya bahasa.</div>
       <div class="field-entry">
         <input type="text" id="inputPosisi" placeholder="Contoh: Business Staff, Customer Service, Marketing" maxlength="80">
       </div>
@@ -555,6 +555,69 @@
   /* ============ PROXY CONFIG (aman, key disimpan di val.town) ============ */
   const PROXY_URL = "https://aliavvienceenaalattqia--351b029e7d6c11f18f8e1607ee4eb77e.web.val.run";
 
+  /* ============ Persist form state (survive tab discard/reload) ============ */
+  const FIELD_CONFIG = {
+    wrapPendidikan: { placeholder: 'Ketik pendidikan kamu yang akan ditampilkan di CV', unlimited: false },
+    wrapPengalamanKerja: { placeholder: 'Pernah kerja di mana dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut', unlimited: true },
+    wrapOrganisasi: { placeholder: 'Pernah aktif di organisasi apa dengan tugas apa, ceritakan pengalaman kamu di sini dan akan saya analisis dan saya akan membuat CV dengan pengalaman tersebut', unlimited: true },
+    wrapSertifikat: { placeholder: 'Nama sertifikat, lembaganya (apabila ada), skornya (apabila ada), dan kapan kamu mendapatkannya', unlimited: false }
+  };
+
+  function saveFormState() {
+    try {
+      const state = {
+        nama: document.getElementById('inputNama').value,
+        kontak: document.getElementById('inputKontak').value,
+        posisi: document.getElementById('inputPosisi').value,
+        entries: {}
+      };
+      Object.keys(FIELD_CONFIG).forEach(wrapId => {
+        state.entries[wrapId] = Array.from(document.querySelectorAll(`#${wrapId} textarea`)).map(t => t.value);
+      });
+      sessionStorage.setItem('cvFormState', JSON.stringify(state));
+    } catch (e) { /* penyimpanan gagal, abaikan diam-diam */ }
+  }
+
+  function restoreFormState() {
+    let state;
+    try {
+      const raw = sessionStorage.getItem('cvFormState');
+      if (!raw) return;
+      state = JSON.parse(raw);
+    } catch (e) { return; }
+    if (!state) return;
+
+    if (state.nama) document.getElementById('inputNama').value = state.nama;
+    if (state.kontak) document.getElementById('inputKontak').value = state.kontak;
+    if (state.posisi) document.getElementById('inputPosisi').value = state.posisi;
+
+    Object.keys(FIELD_CONFIG).forEach(wrapId => {
+      const values = (state.entries && state.entries[wrapId]) || [];
+      if (values.length === 0) return;
+      const wrap = document.getElementById(wrapId);
+      const cfg = FIELD_CONFIG[wrapId];
+      values.forEach((val, i) => {
+        let existing = wrap.querySelectorAll('textarea');
+        let ta = existing[i];
+        if (!ta) {
+          addEntry(wrapId, cfg.placeholder, cfg.unlimited);
+          existing = wrap.querySelectorAll('textarea');
+          ta = existing[existing.length - 1];
+        }
+        ta.value = val;
+        const counter = ta.parentElement.querySelector('.char-count');
+        if (counter) {
+          counter.textContent = (ta.maxLength && ta.maxLength > 0) ? `${ta.value.length}/${ta.maxLength}` : `${ta.value.length} karakter`;
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    restoreFormState();
+    document.body.addEventListener('input', saveFormState);
+  });
+
   /* ============ Dynamic entries (tombol + Tambah) ============ */
   function addEntry(wrapId, placeholder, unlimited) {
     const wrap = document.getElementById(wrapId);
@@ -662,19 +725,21 @@
   const HIDDEN_INSTRUCTION = `Kamu adalah asisten pembuat CV profesional berbahasa Indonesia. Tugasmu: mengubah cerita mentah pengguna menjadi CV profesional, mengikuti aturan ketat berikut (disintesis dari masukan beberapa HR):
 
 1. Tanpa foto, format ATS-friendly (teks murni, tanpa tabel rumit).
-2. Bagian profil singkat: ringkas, to-the-point, bahasa profesional namun sederhana, langsung mengarah ke posisi yang dilamar (jika disebutkan).
-3. Bagian pendidikan: tulis sebagai SATU PARAGRAF singkat berisi nama universitas + program studi + fokus studi singkat + IPK (HANYA jika disebutkan pengguna). JANGAN sertakan tahun lulus.
-4. Kemampuan/keterampilan: jika ada beberapa skill yang berkaitan/tumpang tindih, gabungkan jadi satu item, jangan diulang-ulang.
-5. Setiap pengalaman kerja: analisis dan tentukan istilah posisi/jabatan yang tepat dan wajar berdasarkan tugas yang diceritakan. Tulis ulang setiap tugas dengan bahasa CV profesional yang achievement-based (menonjolkan hasil/pencapaian), BUKAN sekadar daftar tugas administratif mentah. Sesuaikan penekanan dengan posisi yang dilamar jika disebutkan.
-6. PENTING — tetap konservatif dan jujur: JANGAN mengarang angka, persentase, atau pencapaian yang tidak disebutkan pengguna. Jika pengguna tidak menyebutkan angka, deskripsikan tugas dengan bahasa yang diperhalus dan profesional TANPA membuat klaim pencapaian palsu. Jangan melebih-lebihkan level jabatan di luar kewajaran dari cerita yang diberikan.
+2. Bagian profil singkat: ringkas, to-the-point, bahasa profesional namun sederhana. Gunakan "Posisi yang dilamar" (jika disebutkan) HANYA sebagai konteks untuk menentukan nada/penekanan bahasa profil — JANGAN pernah menuliskan ulang teks posisi tersebut secara mentah/verbatim di bagian manapun pada hasil JSON.
+3. Bagian pendidikan: untuk SETIAP entri pendidikan, pisahkan menjadi institusi, program studi, dan periode. WAJIB: jika pengguna menyebutkan tahun/periode (misal "2022–2026", "lulus 2020", "Agustus 2016 - Agustus 2020"), SELALU ekstrak dan cantumkan apa adanya di field "periode". Hanya kosongkan field "periode" jika pengguna benar-benar tidak menyebutkan info waktu apapun. IPK atau fokus studi (jika disebutkan) masuk ke field "keterangan".
+4. Keterampilan: pisahkan menjadi dua kelompok — "keterampilan_teknis" (hard skill: software, bahasa pemrograman, alat, sertifikasi teknis, dsb) dan "keterampilan_lunak" (soft skill: komunikasi, kerja tim, kepemimpinan, manajemen waktu, dsb). Jika ada beberapa skill yang berkaitan/tumpang tindih dalam satu kelompok, gabungkan jadi satu item, jangan diulang-ulang.
+5. Setiap pengalaman kerja/organisasi: analisis dan tentukan istilah posisi/jabatan yang tepat dan wajar berdasarkan tugas yang diceritakan. Tulis ulang setiap tugas dengan bahasa CV profesional yang achievement-based (menonjolkan hasil/pencapaian), BUKAN sekadar daftar tugas administratif mentah. Sesuaikan penekanan dengan posisi yang dilamar jika disebutkan (tanpa menuliskan ulang teks posisi itu secara verbatim). WAJIB: jika pengguna menyebutkan periode/waktu (bulan, tahun, durasi), SELALU ekstrak dan cantumkan apa adanya di field "periode". Hanya kosongkan jika benar-benar tidak disebutkan.
+6. PENTING — tetap konservatif dan jujur: JANGAN mengarang angka, persentase, tahun, atau pencapaian yang tidak disebutkan pengguna. Jika pengguna tidak menyebutkan angka, deskripsikan tugas dengan bahasa yang diperhalus dan profesional TANPA membuat klaim pencapaian palsu. Jangan melebih-lebihkan level jabatan di luar kewajaran dari cerita yang diberikan.
 7. Bahasa CV: Bahasa Indonesia. Istilah teknis/nama alat/software yang lazimnya berbahasa Inggris (misal: Customer Service, Microsoft Excel, Public Speaking) boleh tetap dalam Bahasa Inggris, dan tandai kata/istilah tersebut dengan <em>...</em> untuk dicetak miring.
 8. Jangan batasi panjang CV pada satu halaman — sesuaikan secara alami dengan isi.
-9. Jika pengguna tidak mengisi suatu kategori (organisasi/sertifikat), JANGAN buat entri kosong untuk kategori itu — cukup kembalikan array kosong.
+9. Jika pengguna tidak mengisi suatu kategori (organisasi/sertifikat/salah satu jenis keterampilan), JANGAN buat entri kosong untuk kategori itu — cukup kembalikan array kosong.
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), dengan struktur PERSIS seperti berikut:
 {
   "profil": "string paragraf singkat",
-  "pendidikan": "string satu paragraf",
+  "pendidikan": [
+    { "institusi": "string", "program_studi": "string", "periode": "string (ambil dari input apa adanya, kosongkan jika tidak disebutkan)", "keterangan": "string opsional misal IPK/fokus studi, kosongkan jika tidak ada" }
+  ],
   "pengalaman_kerja": [
     { "posisi": "string", "institusi": "string", "periode": "string (ambil dari input apa adanya, kosongkan jika tidak disebutkan)", "bullets": ["string", "string"] }
   ],
@@ -682,7 +747,8 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
     { "posisi": "string", "institusi": "string", "periode": "string", "bullets": ["string"] }
   ],
   "sertifikat": ["string", "string"],
-  "keterampilan": ["string", "string"]
+  "keterampilan_teknis": ["string", "string"],
+  "keterampilan_lunak": ["string", "string"]
 }`;
 
   function buildUserPrompt(data) {
@@ -734,14 +800,22 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
     let html = '';
     html += `<div class="cv-name">${escapeHtml(nama)}</div>`;
     html += `<div class="cv-contact">${kontakFormatted}</div>`;
-    if (posisi) html += `<div class="cv-role">${escapeHtml(posisi)}</div>`;
+    if (posisi) html += `<!-- posisi hanya dipakai sebagai sinyal ke AI, tidak ditampilkan mentah di CV -->`;
     html += `<hr class="cv-hr">`;
 
     html += `<div class="cv-section-title first">Profil</div>`;
     html += `<p class="cv-profile-text">${cv.profil || ''}</p>`;
 
-    html += `<div class="cv-section-title">Pendidikan</div>`;
-    html += `<p class="cv-profile-text">${cv.pendidikan || ''}</p>`;
+    if (cv.pendidikan && cv.pendidikan.length) {
+      html += `<div class="cv-section-title">Pendidikan</div>`;
+      cv.pendidikan.forEach(edu => {
+        html += `<div class="cv-entry">`;
+        html += `<div class="cv-entry-header"><span>${edu.institusi || ''}</span><span>${edu.periode || ''}</span></div>`;
+        if (edu.program_studi) html += `<div class="cv-entry-role">${edu.program_studi}</div>`;
+        if (edu.keterangan) html += `<p class="cv-profile-text">${edu.keterangan}</p>`;
+        html += `</div>`;
+      });
+    }
 
     if (cv.pengalaman_kerja && cv.pengalaman_kerja.length) {
       html += `<div class="cv-section-title">Pengalaman Kerja</div>`;
@@ -774,9 +848,14 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
       html += `<ul>` + cv.sertifikat.map(s => `<li>${s}</li>`).join('') + `</ul>`;
     }
 
-    if (cv.keterampilan && cv.keterampilan.length) {
+    if ((cv.keterampilan_teknis && cv.keterampilan_teknis.length) || (cv.keterampilan_lunak && cv.keterampilan_lunak.length)) {
       html += `<div class="cv-section-title">Kemampuan dan Keterampilan</div>`;
-      html += `<p class="cv-skills">${cv.keterampilan.join(', ')}</p>`;
+      if (cv.keterampilan_teknis && cv.keterampilan_teknis.length) {
+        html += `<p class="cv-skills"><strong>Keterampilan Teknis:</strong> ${cv.keterampilan_teknis.join(', ')}</p>`;
+      }
+      if (cv.keterampilan_lunak && cv.keterampilan_lunak.length) {
+        html += `<p class="cv-skills"><strong>Keterampilan Lunak:</strong> ${cv.keterampilan_lunak.join(', ')}</p>`;
+      }
     }
 
     document.getElementById('cvPaper').innerHTML = html;

@@ -466,6 +466,111 @@
     .doc-gallery { grid-template-columns: repeat(2, 1fr); }
   }
 
+  /* ============ EXPANDABLE SECTIONS (Profil / Pendidikan / Pengalaman Kerja / Organisasi) ============ */
+  .xsec {
+    position: relative;
+    margin: 64px 0;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg-alt);
+  }
+  .xsec-cover { position: relative; min-height: 74vh; display: flex; align-items: flex-end; overflow: hidden; }
+  .xsec-cover-img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.30; transition: opacity .7s ease;
+  }
+  .xsec.is-open .xsec-cover-img { opacity: 0.14; }
+  .xsec-cover-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.6) 60%, var(--bg-alt) 100%);
+  }
+  .xsec-cover-linart {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--gold); opacity: 0.16; pointer-events: none;
+  }
+  .xsec-cover-linart svg { width: 78%; max-width: 460px; height: auto; }
+  .xsec-cover-content { position: relative; z-index: 2; padding: 42px 26px 46px; width: 100%; }
+  .xsec-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px;
+    color: var(--blue); text-transform: uppercase; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .xsec-eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--blue); display: inline-block; }
+  .xsec-title {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: clamp(28px, 8.4vw, 44px); line-height: 1.08; letter-spacing: -0.5px;
+    margin-bottom: 16px; text-transform: uppercase;
+  }
+  .xsec-desc { color: var(--ink-soft); font-size: 15px; max-width: 480px; margin-bottom: 26px; line-height: 1.65; }
+  .xsec-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: .5px;
+    color: #0A0A0A; background: linear-gradient(90deg, var(--gold), #e8c869);
+    border: none; border-radius: 100px; padding: 13px 22px;
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .xsec-btn .arw { transition: transform .35s ease; display: inline-block; }
+  .xsec.is-open .xsec-btn .arw { transform: rotate(180deg); }
+
+  .xsec-detail-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .7s cubic-bezier(.65,0,.35,1); }
+  .xsec.is-open .xsec-detail-wrap { grid-template-rows: 1fr; }
+  .xsec-detail-inner { overflow: hidden; }
+  .xsec-detail {
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .5s ease .15s, transform .5s ease .15s;
+  }
+  .xsec.is-open .xsec-detail { opacity: 1; transform: none; }
+
+  .xsec-detail-media { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #000; cursor: pointer; }
+  .xsec-detail-media img { width: 100%; height: 100%; object-fit: cover; }
+  .xsec-detail-body { padding: 28px 26px 8px; }
+  .xsec-detail-name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px;
+    letter-spacing: .3px; text-transform: uppercase;
+  }
+  .xsec-detail-sub {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 1.2px; color: var(--gold); margin: 6px 0 16px; text-transform: uppercase;
+  }
+  .xsec-detail-body p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.75; margin-bottom: 14px; }
+  .xsec-detail-body p:last-child { margin-bottom: 0; }
+  .xsec-detail-body.no-media { padding-top: 8px; }
+
+  .xsec-sub { padding-bottom: 32px; }
+  .xsec-sub-divider { height: 1px; background: var(--line); margin: 8px 26px 32px; }
+
+  .xsec-sub-media-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; aspect-ratio: 16/9; overflow: hidden; background: #000; }
+  .xsec-sub-media-pair img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+
+  /* BSI video loop */
+  .bsi-video-wrap {
+    position: relative; width: 100%; max-width: 320px; aspect-ratio: 9/16;
+    margin: 0 auto; background: #000; overflow: hidden;
+  }
+  .bsi-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bsi-video-fade { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 1.5s ease; pointer-events: none; }
+  .bsi-video-fade.show { opacity: 1; }
+  .bsi-video-caption {
+    text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); padding: 10px 26px 0; letter-spacing: .3px;
+  }
+
+  /* Curtain close animation */
+  .xsec-curtain {
+    position: absolute; inset: 0; z-index: 6; pointer-events: none;
+    transform: translateY(-100%);
+  }
+  .xsec-curtain img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+  .xsec-curtain-bg { position: absolute; inset: 0; background: var(--bg-alt); }
+  .xsec-curtain-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0.7); }
+  .xsec.is-closing .xsec-curtain { transition: transform .65s cubic-bezier(.65,0,.35,1); transform: translateY(0%); }
+  .xsec.is-closing .xsec-detail { opacity: 0; transition: opacity .35s ease; }
+
+  @media (max-width: 700px) {
+    .xsec-cover { min-height: 68vh; }
+    .xsec-sub-media-pair { grid-template-columns: 1fr; aspect-ratio: 4/3; }
+  }
+
   /* CERT STACK */
   .cert-stack-wrap {
     display: flex;
@@ -711,8 +816,10 @@
   </div>
   <div class="nav-right">
     <div class="nav-links">
-      <a href="#about">Profil</a>
-      <a href="#pengalaman">Pengalaman</a>
+      <a href="#xsec-profil" onclick="return navClick(event,'profil')">Profil</a>
+      <a href="#xsec-pendidikan" onclick="return navClick(event,'pendidikan')">Pendidikan</a>
+      <a href="#xsec-pengalaman" onclick="return navClick(event,'pengalaman')">Pengalaman Kerja</a>
+      <a href="#xsec-organisasi" onclick="return navClick(event,'organisasi')">Organisasi</a>
       <a href="#sertifikasi">Sertifikasi</a>
       <a href="#kontak">Kontak</a>
     </div>
@@ -725,6 +832,14 @@
 <div class="menu-overlay" id="menuOverlay">
   <button class="menu-close-btn" id="menuCloseBtn" aria-label="Tutup menu">✕</button>
   <div class="menu-overlay-inner">
+    <div class="menu-links menu-links-sections">
+      <a href="#xsec-profil" onclick="return navClick(event,'profil')">Profil</a>
+      <a href="#xsec-pendidikan" onclick="return navClick(event,'pendidikan')">Pendidikan</a>
+      <a href="#xsec-pengalaman" onclick="return navClick(event,'pengalaman')">Pengalaman Kerja</a>
+      <a href="#xsec-organisasi" onclick="return navClick(event,'organisasi')">Pengalaman Organisasi</a>
+      <a href="#sertifikasi" onclick="document.getElementById('menuOverlay').classList.remove('open')">Sertifikasi</a>
+      <a href="#kontak" onclick="document.getElementById('menuOverlay').classList.remove('open')">Kontak</a>
+    </div>
     <div class="menu-links">
       <a href="sharing.html"><span class="menu-icon">📖</span>Sharing with Avin</a>
       <a href="buat-cv.html"><span class="menu-icon">📄</span>Buat CV with Avin</a>
@@ -769,98 +884,167 @@
     </div>
   </div>
 
-  <section id="about">
-    <div class="section-head">
-      <span class="section-num">01</span>
-      <span class="section-title">Profil</span>
-      <svg class="line-art line-art-face" viewBox="0 0 200 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M40 150 C35 120 35 95 50 75 C58 64 68 56 82 54 C78 44 82 32 92 26 C104 19 120 22 128 34 C134 43 133 54 127 62 C138 66 147 76 148 90 C149 102 143 112 133 117 C140 124 143 134 140 144 C137 154 128 160 118 158 C122 148 119 138 111 132 C104 138 94 140 86 136 C88 146 84 156 75 160 C65 164 55 159 51 150" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="about-body">
-      <div class="reveal">
-        <p>Saya lulusan Program Studi Ekonomi Syariah, Fakultas Ekonomi dan Bisnis Islam, UIN Siber Syekh Nurjati Cirebon (Yudisium Juni 2026), dengan skripsi berjudul <em>"Analisis Pengaruh Kesenjangan Digital, Infrastruktur Teknologi, dan Keterampilan Digital terhadap Pertumbuhan Ekonomi di Indonesia Tahun 2011–2024"</em>.</p>
-        <p>Pengalaman magang di Bank Syariah Indonesia memberi saya pemahaman langsung tentang operasional perbankan syariah — mulai dari layanan nasabah, migrasi rekening, hingga edukasi literasi keuangan syariah ke masyarakat. Saya memiliki minat besar pada industri perbankan dan keuangan, dan ingin mengembangkan karier dengan berkontribusi pada peningkatan kualitas layanan, operasional perbankan, serta pengelolaan administrasi dan keuangan yang efektif.</p>
-      </div>
-      <div class="about-facts reveal">
-        <div><span>Universitas</span><span>UIN Siber Syekh Nurjati Cirebon</span></div>
-        <div><span>Program Studi</span><span>Ekonomi Syariah</span></div>
-        <div><span>Fakultas</span><span>Ekonomi & Bisnis Islam</span></div>
-        <div><span>Status</span><span>Lulus — Yudisium Juni 2026</span></div>
-        <div><span>Domisili</span><span>Cirebon, Indonesia</span></div>
+  <div class="xsec" id="xsec-profil">
+    <div class="xsec-cover">
+      <img class="xsec-cover-img" src="images/profile.jpg" alt="Ali Avvienceena Al Attqia">
+      <div class="xsec-cover-overlay"></div>
+      <div class="xsec-cover-content">
+        <div class="xsec-eyebrow">01 — Profil</div>
+        <h2 class="xsec-title">Bergerak dengan<br>Prinsip Syariah</h2>
+        <p class="xsec-desc">Lulusan Ekonomi Syariah yang percaya bahwa kerja profesional dan nilai keislaman bisa berjalan beriringan — dari ruang kelas ke meja pelayanan nasabah.</p>
+        <button class="xsec-btn" onclick="toggleXsec('profil')">Kenal Lebih Dekat <span class="arw">↓</span></button>
       </div>
     </div>
-  </section>
-
-  <section id="pengalaman">
-    <div class="section-head">
-      <span class="section-num">02</span>
-      <span class="section-title">Pengalaman Kerja</span>
-    </div>
-    <div class="timeline">
-
-      <div class="exp-item reveal">
-        <div class="exp-date">FEB — JUN 2025</div>
-        <div>
-          <div class="exp-role">Operational Staff & Customer Service (Magang)</div>
-          <div class="exp-org">Bank Syariah Indonesia (BSI) — KCP Cirebon Plered 1</div>
-          <ul class="exp-list">
-            <li>Menjalankan proses migrasi rekening nasabah eks-BNI Syariah dan eks-BRI Syariah ke sistem BSI, termasuk verifikasi kelengkapan syarat, pengisian formulir, hingga pencetakan kartu ATM baru.</li>
-            <li>Melakukan input data nasabah untuk proses <strong>BI Checking</strong> guna mendukung analisis kelayakan pembiayaan.</li>
-            <li>Menjalankan aktivitas telemarketing via WhatsApp dengan target menghubungi <strong>1.000+ nasabah per hari</strong> untuk edukasi dan promosi produk perbankan syariah.</li>
-            <li>Memperluas literasi perbankan syariah ke masyarakat melalui metode <strong>pemetaan (mapping) area 3–5 km</strong> dan edukasi langsung di lapangan.</li>
-            <li>Mendukung kegiatan administratif rutin: filing dokumen, penyusunan rekening koran nasabah, dan pencetakan berkas pembiayaan.</li>
-          </ul>
-          <div class="doc-gallery">
-            <div class="doc-thumb" onclick="openLightbox('images/bsi-doc-2.jpg')"><img src="images/bsi-doc-2.jpg" alt="Dokumentasi kegiatan tim di BSI"></div>
-            <div class="doc-thumb" onclick="openLightbox('images/bsi-doc-1.jpg')"><img src="images/bsi-doc-1.jpg" alt="Dokumentasi aktivitas telemarketing"></div>
-            <div class="doc-thumb" onclick="openLightbox('images/bsi-doc-3.jpg')"><img src="images/bsi-doc-3.jpg" alt="Dokumentasi briefing tim BSI"></div>
+    <div class="xsec-detail-wrap">
+      <div class="xsec-detail-inner">
+        <div class="xsec-detail">
+          <div class="xsec-detail-media" onclick="openLightbox('images/profil-detail.jpg')">
+            <img src="images/profil-detail.jpg" alt="Ali Avvienceena Al Attqia">
+          </div>
+          <div class="xsec-detail-body">
+            <div class="xsec-detail-name">Ali Avvienceena Al Attqia</div>
+            <span class="xsec-detail-sub">Fresh Graduate — Ekonomi Syariah</span>
+            <p>Saya Ali Avvienceena Al Attqia — biasa dipanggil Avin — lulusan S1 Ekonomi Syariah dari UIN Siber Syekh Nurjati Cirebon. Ketertarikan saya pada dunia keuangan syariah tumbuh dari keinginan sederhana: memastikan sistem ekonomi yang saya jalani sehari-hari tetap selaras dengan nilai yang saya yakini.</p>
+            <p>Pengalaman magang di Bank Syariah Indonesia mengajarkan saya bahwa detail kecil — sehelai dokumen, satu pesan ke nasabah, satu percakapan di depan warung — bisa membawa dampak besar kalau dikerjakan dengan amanah. Di luar pekerjaan, saya menikmati hal-hal yang melatih ketelitian dan kesabaran, salah satunya menyusun rubik.</p>
           </div>
         </div>
       </div>
+    </div>
+    <div class="xsec-curtain">
+      <div class="xsec-curtain-bg"></div>
+      <img src="images/profile.jpg" alt="">
+      <div class="xsec-curtain-overlay"></div>
+    </div>
+  </div>
 
-      <div class="exp-item reveal">
-        <div class="exp-date">SEP 2024 — JAN 2025</div>
-        <div>
-          <div class="exp-role">Banquet Staff</div>
-          <div class="exp-org">PT Patra Jasa</div>
-          <ul class="exp-list">
-            <li>Berkoordinasi dengan tim untuk pelaksanaan <strong>set up</strong> dan <strong>clear up</strong> acara sesuai jadwal dan standar operasional.</li>
-            <li>Bertanggung jawab atas <strong>Store Requisition</strong> — mencatat dan mengajukan kebutuhan barang operasional untuk setiap acara.</li>
-            <li>Turut menangani event berskala besar, termasuk acara dari <strong>Pertamina dengan kapasitas 500 pack</strong>.</li>
-          </ul>
-          <div class="doc-gallery doc-gallery-single">
-            <div class="doc-thumb" onclick="openLightbox('images/patra-jasa-doc.jpg')"><img src="images/patra-jasa-doc.jpg" alt="Dokumentasi kegiatan di PT Patra Jasa"></div>
+  <div class="xsec" id="xsec-pendidikan">
+    <div class="xsec-cover">
+      <img class="xsec-cover-img" src="images/pendidikan-cover.jpg" alt="Kampus UIN Siber Syekh Nurjati Cirebon">
+      <div class="xsec-cover-overlay"></div>
+      <div class="xsec-cover-content">
+        <div class="xsec-eyebrow">02 — Pendidikan</div>
+        <h2 class="xsec-title">Pendidikan yang<br>Membentuk Arah</h2>
+        <p class="xsec-desc">Empat tahun mendalami ekonomi dan keuangan syariah — dari teori akad hingga praktik langsung di lapangan.</p>
+        <button class="xsec-btn" onclick="toggleXsec('pendidikan')">Lihat Perjalanan Pendidikan <span class="arw">↓</span></button>
+      </div>
+    </div>
+    <div class="xsec-detail-wrap">
+      <div class="xsec-detail-inner">
+        <div class="xsec-detail">
+          <div class="xsec-detail-media" onclick="openLightbox('images/pendidikan-detail.jpg')">
+            <img src="images/pendidikan-detail.jpg" alt="Ali Avvienceena Al Attqia">
+          </div>
+          <div class="xsec-detail-body">
+            <div class="xsec-detail-name">S1 Ekonomi Syariah</div>
+            <span class="xsec-detail-sub">UIN Siber Syekh Nurjati Cirebon · 2022–2026</span>
+            <p>Menyelesaikan studi Sarjana Ekonomi Syariah dengan fokus pada ekonomi dan keuangan syariah — mulai dari akad muamalah, manajemen risiko syariah, hingga praktik operasional perbankan syariah. Skripsi berjudul <em>"Analisis Pengaruh Kesenjangan Digital, Infrastruktur Teknologi, dan Keterampilan Digital terhadap Pertumbuhan Ekonomi di Indonesia Tahun 2011–2024."</em></p>
+            <p>Sebelumnya menempuh pendidikan menengah di SMA NU Sukra. Selama masa studi, saya aktif mengasah kemampuan analitis lewat SQL dan Python, serta memperkuat kemampuan bahasa lewat sertifikasi TOEFL dan Bahasa Arab.</p>
           </div>
         </div>
       </div>
-
     </div>
-  </section>
-
-  <section id="organisasi">
-    <div class="section-head">
-      <span class="section-num">03</span>
-      <span class="section-title">Pengalaman Organisasi</span>
+    <div class="xsec-curtain">
+      <div class="xsec-curtain-bg"></div>
+      <img src="images/pendidikan-cover.jpg" alt="">
+      <div class="xsec-curtain-overlay"></div>
     </div>
-    <div class="timeline">
-      <div class="exp-item reveal">
-        <div class="exp-date">2024</div>
-        <div>
-          <div class="exp-role">Dana Usaha</div>
-          <div class="exp-org">Senjapreneur — UKM Kewirausahaan, UIN Siber Syekh Nurjati Cirebon</div>
-          <ul class="exp-list">
-            <li>Mengelola keuangan program kerja organisasi.</li>
-            <li>Mencari dan menjalin kerja sama sponsorship, berhasil mengamankan <strong>4 sponsor</strong> untuk mendukung kegiatan organisasi.</li>
-          </ul>
+  </div>
+
+  <div class="xsec" id="xsec-pengalaman">
+    <div class="xsec-cover">
+      <img class="xsec-cover-img" src="images/pengalaman-cover.jpg" alt="Kegiatan operasional">
+      <div class="xsec-cover-overlay"></div>
+      <div class="xsec-cover-content">
+        <div class="xsec-eyebrow">03 — Pengalaman Kerja</div>
+        <h2 class="xsec-title">Belajar Langsung<br>di Lapangan</h2>
+        <p class="xsec-desc">Dari meja layanan nasabah di Bank Syariah Indonesia hingga operasional acara besar di PT Patra Jasa — dua dunia berbeda yang mengajarkan hal yang sama: ketelitian dan tanggung jawab.</p>
+        <button class="xsec-btn" onclick="toggleXsec('pengalaman')">Lihat Detail Pengalaman <span class="arw">↓</span></button>
+      </div>
+    </div>
+    <div class="xsec-detail-wrap">
+      <div class="xsec-detail-inner">
+        <div class="xsec-detail">
+
+          <div class="xsec-sub">
+            <div class="bsi-video-wrap">
+              <video id="bsiVideo" muted playsinline preload="none" poster="images/pengalaman-cover.jpg">
+                <source src="images/video-bsi.mp4" type="video/mp4">
+              </video>
+              <div class="bsi-video-fade" id="bsiVideoFade"></div>
+            </div>
+            <div class="bsi-video-caption">Sesi persiapan sebelum mapping wilayah 3 km</div>
+            <div class="xsec-detail-body no-media">
+              <div class="xsec-detail-name">Bank Syariah Indonesia (BSI)</div>
+              <span class="xsec-detail-sub">KCP Cirebon Plered 1 — Customer Service & Marketing Assistant</span>
+              <p>Selama magang di BSI KCP Cirebon Plered 1, saya dipercaya menangani berbagai sisi operasional cabang — membantu nasabah melengkapi data di meja Customer Service, memilah dokumen pengajuan pembiayaan, hingga mencatat keluar-masuk barang jaminan di unit gadai lewat sistem internal NOOS.</p>
+              <p>Di sisi pemasaran, saya menjalankan komunikasi digital untuk mendukung migrasi nasabah dari BSI Mobile ke Byond by BSI dan promosi Tabungan Haji. Saya juga terlibat dalam mapping radius 3 km dari kantor cabang — video di atas diambil saat sesi persiapan sebelum turun langsung mengenalkan produk seperti Cicil Emas, Gadai Emas, dan KUR Syariah ke pelaku UMKM sekitar.</p>
+            </div>
+          </div>
+
+          <div class="xsec-sub-divider"></div>
+
+          <div class="xsec-sub">
+            <div class="xsec-sub-media-pair">
+              <img src="images/patra-jasa-doc.jpg" alt="Dokumentasi kegiatan di PT Patra Jasa" onclick="openLightbox('images/patra-jasa-doc.jpg')">
+              <img src="images/patra-jasa-doc-2.jpg" alt="Dokumentasi ballroom acara PT Patra Jasa" onclick="openLightbox('images/patra-jasa-doc-2.jpg')">
+            </div>
+            <div class="xsec-detail-body">
+              <div class="xsec-detail-name">PT Patra Jasa</div>
+              <span class="xsec-detail-sub">Banquet Staff</span>
+              <p>Sebagai Banquet Staff, saya mengoordinasikan proses set-up dan clear-up ruang acara, serta mengelola permintaan barang operasional (store requisition) demi kelancaran logistik. Salah satu momen berkesan: menangani operasional acara berskala besar yang dihadiri hingga 500 peserta.</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
-  </section>
+    <div class="xsec-curtain">
+      <div class="xsec-curtain-bg"></div>
+      <img src="images/pengalaman-cover.jpg" alt="">
+      <div class="xsec-curtain-overlay"></div>
+    </div>
+  </div>
+
+  <div class="xsec" id="xsec-organisasi">
+    <div class="xsec-cover">
+      <div class="xsec-cover-linart">
+        <svg viewBox="0 0 240 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M10 104 L62 80 L98 92 L118 84" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M230 104 L178 80 L142 92 L122 84" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M98 92 C106 88 114 88 120 92 C126 88 134 88 142 92" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M62 80 C58 70 60 60 68 54" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M178 80 C182 70 180 60 172 54" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="120" cy="46" r="16" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div class="xsec-cover-overlay"></div>
+      <div class="xsec-cover-content">
+        <div class="xsec-eyebrow">04 — Pengalaman Organisasi</div>
+        <h2 class="xsec-title">Berkontribusi<br>di Luar Kelas</h2>
+        <p class="xsec-desc">Belajar membangun kemitraan dan mengelola sumber daya lewat organisasi kewirausahaan mahasiswa.</p>
+        <button class="xsec-btn" onclick="toggleXsec('organisasi')">Lihat Peran Organisasi <span class="arw">↓</span></button>
+      </div>
+    </div>
+    <div class="xsec-detail-wrap">
+      <div class="xsec-detail-inner">
+        <div class="xsec-detail">
+          <div class="xsec-detail-body no-media">
+            <div class="xsec-detail-name">Senjapreneur — UKM Kewirausahaan</div>
+            <span class="xsec-detail-sub">Staf Dana Usaha · 2024</span>
+            <p>Sebagai Staf Dana Usaha di Senjapreneur, saya merancang dan mengeksekusi strategi penggalangan dana untuk mendukung operasional organisasi — termasuk berhasil menjalin kemitraan dan mengamankan 4 sponsor eksternal untuk acara Tiknol.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="xsec-curtain">
+      <div class="xsec-curtain-bg"></div>
+      <div class="xsec-curtain-overlay"></div>
+    </div>
+  </div>
 
   <section id="sertifikasi">
     <div class="section-head">
-      <span class="section-num">04</span>
+      <span class="section-num">05</span>
       <span class="section-title">Sertifikasi</span>
     </div>
 
@@ -1238,6 +1422,87 @@
   certCards.forEach(card => {
     card.addEventListener('click', () => openLightbox(card.dataset.src));
   });
+
+  /* ---------- Expandable sections (Profil / Pendidikan / Pengalaman Kerja / Organisasi) ---------- */
+  let currentOpenXsec = null;
+  let bsiVideoTimer = null;
+
+  function closeXsec(id, callback) {
+    const el = document.getElementById('xsec-' + id);
+    if (!el || !el.classList.contains('is-open')) { if (callback) callback(); return; }
+    if (id === 'pengalaman') stopBsiVideo();
+    el.classList.add('is-closing');
+    setTimeout(() => {
+      el.classList.remove('is-open', 'is-closing');
+      if (callback) callback();
+    }, 680);
+  }
+
+  function openXsec(id) {
+    const el = document.getElementById('xsec-' + id);
+    if (!el) return;
+    el.classList.add('is-open');
+    currentOpenXsec = id;
+    if (id === 'pengalaman') startBsiVideo();
+  }
+
+  function toggleXsec(id) {
+    const el = document.getElementById('xsec-' + id);
+    if (!el) return;
+    if (el.classList.contains('is-open')) {
+      closeXsec(id);
+      currentOpenXsec = null;
+    } else if (currentOpenXsec && currentOpenXsec !== id) {
+      closeXsec(currentOpenXsec, () => openXsec(id));
+    } else {
+      openXsec(id);
+    }
+  }
+
+  function goToSection(id) {
+    const target = document.getElementById('xsec-' + id);
+    const doScroll = () => { if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    if (currentOpenXsec && currentOpenXsec !== id) {
+      closeXsec(currentOpenXsec, doScroll);
+      currentOpenXsec = null;
+    } else {
+      doScroll();
+    }
+  }
+
+  function navClick(e, id) {
+    e.preventDefault();
+    goToSection(id);
+    return false;
+  }
+
+  function startBsiVideo() {
+    const video = document.getElementById('bsiVideo');
+    const fade = document.getElementById('bsiVideoFade');
+    if (!video) return;
+    if (!video.dataset.bound) {
+      video.dataset.bound = '1';
+      video.addEventListener('ended', () => {
+        fade.classList.add('show');
+        bsiVideoTimer = setTimeout(() => {
+          video.currentTime = 0;
+          bsiVideoTimer = setTimeout(() => {
+            video.play().catch(() => {});
+            fade.classList.remove('show');
+          }, 2000);
+        }, 1500);
+      });
+    }
+    video.play().catch(() => {});
+  }
+
+  function stopBsiVideo() {
+    const video = document.getElementById('bsiVideo');
+    const fade = document.getElementById('bsiVideoFade');
+    if (video) video.pause();
+    if (fade) fade.classList.remove('show');
+    if (bsiVideoTimer) { clearTimeout(bsiVideoTimer); bsiVideoTimer = null; }
+  }
 
   /* ---------- Lightbox ---------- */
   function openLightbox(src) {

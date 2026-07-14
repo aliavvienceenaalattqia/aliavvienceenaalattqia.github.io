@@ -804,33 +804,6 @@
   }
 
   a:focus-visible, button:focus-visible, .cert-stack:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-
-/* Pendidikan cinematic */
-#xsec-pendidikan.is-open .xsec-cover-img{
- transform:scale(1.12);
- transition:transform 8s ease;
-}
-#xsec-pendidikan .xsec-cover-img{transition:transform 8s ease;}
-#xsec-pendidikan.is-open .xsec-cover-overlay{
- background:linear-gradient(180deg, rgba(6,7,9,.35) 0%, rgba(6,7,9,.78) 55%, var(--bg-alt) 100%);
- transition:background .8s ease;
-}
-#xsec-pendidikan .xsec-detail{
- filter:blur(14px);
-}
-#xsec-pendidikan.is-open .xsec-detail{
- filter:blur(0);
- transition:opacity .7s ease .15s, transform .7s ease .15s, filter .7s ease .15s;
-}
-#xsec-pendidikan .xsec-detail-body p{
- opacity:0; transform:translateY(18px);
-}
-#xsec-pendidikan.is-open .xsec-detail-body p{
- opacity:1; transform:none;
- transition:all .7s ease;
-}
-#xsec-pendidikan.is-open .xsec-detail-body p:nth-child(2){transition-delay:.2s;}
-
 </style>
 </head>
 <body class="intro-lock">

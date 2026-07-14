@@ -475,39 +475,45 @@
     border: 1px solid var(--line);
     background: var(--bg-alt);
   }
-  .xsec-cover { position: relative; min-height: 74vh; display: flex; align-items: flex-end; overflow: hidden; }
+  .xsec-cover { position: relative; min-height: 100vh; display: flex; align-items: flex-end; overflow: hidden; }
   .xsec-cover-img {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-    opacity: 0.30; transition: opacity .7s ease;
+    opacity: 0.34; transition: opacity .7s ease;
   }
-  .xsec.is-open .xsec-cover-img { opacity: 0.14; }
+  .xsec.is-open .xsec-cover-img { opacity: 0.16; }
   .xsec-cover-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.6) 60%, var(--bg-alt) 100%);
+    background: linear-gradient(180deg, rgba(6,7,9,0.25) 0%, rgba(6,7,9,0.55) 45%, rgba(6,7,9,0.88) 78%, var(--bg-alt) 100%);
   }
   .xsec-cover-linart {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     color: var(--gold); opacity: 0.16; pointer-events: none;
   }
   .xsec-cover-linart svg { width: 78%; max-width: 460px; height: auto; }
-  .xsec-cover-content { position: relative; z-index: 2; padding: 42px 26px 46px; width: 100%; }
+  .xsec-cover-content { position: relative; z-index: 2; padding: 42px 26px 52px; width: 100%; }
   .xsec-eyebrow {
     font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px;
     color: var(--blue); text-transform: uppercase; margin-bottom: 16px;
     display: flex; align-items: center; gap: 10px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.9);
   }
   .xsec-eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--blue); display: inline-block; }
   .xsec-title {
     font-family: 'Space Grotesk', sans-serif; font-weight: 700;
     font-size: clamp(28px, 8.4vw, 44px); line-height: 1.08; letter-spacing: -0.5px;
     margin-bottom: 16px; text-transform: uppercase;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.9);
   }
-  .xsec-desc { color: var(--ink-soft); font-size: 15px; max-width: 480px; margin-bottom: 26px; line-height: 1.65; }
+  .xsec-desc {
+    color: var(--ink-soft); font-size: 15px; max-width: 480px; margin-bottom: 26px; line-height: 1.65;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.9);
+  }
   .xsec-btn {
     font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: .5px;
     color: #0A0A0A; background: linear-gradient(90deg, var(--gold), #e8c869);
     border: none; border-radius: 100px; padding: 13px 22px;
     display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
   }
   .xsec-btn .arw { transition: transform .35s ease; display: inline-block; }
   .xsec.is-open .xsec-btn .arw { transform: rotate(180deg); }
@@ -521,38 +527,42 @@
   }
   .xsec.is-open .xsec-detail { opacity: 1; transform: none; }
 
-  .xsec-detail-media { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #000; cursor: pointer; }
-  .xsec-detail-media img { width: 100%; height: 100%; object-fit: cover; }
-  .xsec-detail-body { padding: 28px 26px 8px; }
+  /* Media + text-in-photo pattern: image/video shown at full natural size (no crop),
+     caption box overlaps its bottom edge via gradient, extending as solid panel if text is long */
+  .xsec-media-block { position: relative; width: 100%; }
+  .xsec-media-block img, .xsec-media-block video { width: 100%; height: auto; display: block; opacity: 0.8; cursor: pointer; }
+  .xsec-media-textbox {
+    position: relative; z-index: 2; margin-top: -110px;
+    background: linear-gradient(180deg, transparent 0%, rgba(6,7,9,0.7) 32%, rgba(6,7,9,0.97) 62%, var(--bg-alt) 100%);
+    padding: 130px 26px 8px;
+  }
+  .xsec-media-extra { width: 100%; height: auto; display: block; opacity: 0.8; margin-top: 2px; cursor: pointer; }
   .xsec-detail-name {
     font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px;
     letter-spacing: .3px; text-transform: uppercase;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.9);
   }
   .xsec-detail-sub {
     display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
     letter-spacing: 1.2px; color: var(--gold); margin: 6px 0 16px; text-transform: uppercase;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.9);
   }
   .xsec-detail-body p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.75; margin-bottom: 14px; }
   .xsec-detail-body p:last-child { margin-bottom: 0; }
-  .xsec-detail-body.no-media { padding-top: 8px; }
+  .xsec-detail-body.no-media { padding: 28px 26px 8px; }
 
   .xsec-sub { padding-bottom: 32px; }
   .xsec-sub-divider { height: 1px; background: var(--line); margin: 8px 26px 32px; }
 
-  .xsec-sub-media-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; aspect-ratio: 16/9; overflow: hidden; background: #000; }
-  .xsec-sub-media-pair img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-
   /* BSI video loop */
-  .bsi-video-wrap {
-    position: relative; width: 100%; max-width: 320px; aspect-ratio: 9/16;
-    margin: 0 auto; background: #000; overflow: hidden;
-  }
-  .bsi-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bsi-video-wrap { position: relative; width: 100%; background: #000; }
+  .bsi-video-wrap video { width: 100%; height: auto; aspect-ratio: 480 / 852; object-fit: cover; display: block; opacity: 0.8; }
   .bsi-video-fade { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 1.5s ease; pointer-events: none; }
   .bsi-video-fade.show { opacity: 1; }
   .bsi-video-caption {
-    text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--ink-soft); padding: 10px 26px 0; letter-spacing: .3px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); margin-bottom: 10px; letter-spacing: .3px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.9);
   }
 
   /* Curtain close animation */
@@ -567,8 +577,7 @@
   .xsec.is-closing .xsec-detail { opacity: 0; transition: opacity .35s ease; }
 
   @media (max-width: 700px) {
-    .xsec-cover { min-height: 68vh; }
-    .xsec-sub-media-pair { grid-template-columns: 1fr; aspect-ratio: 4/3; }
+    .xsec-media-textbox { margin-top: -90px; padding-top: 110px; }
   }
 
   /* CERT STACK */
@@ -832,14 +841,6 @@
 <div class="menu-overlay" id="menuOverlay">
   <button class="menu-close-btn" id="menuCloseBtn" aria-label="Tutup menu">✕</button>
   <div class="menu-overlay-inner">
-    <div class="menu-links menu-links-sections">
-      <a href="#xsec-profil" onclick="return navClick(event,'profil')">Profil</a>
-      <a href="#xsec-pendidikan" onclick="return navClick(event,'pendidikan')">Pendidikan</a>
-      <a href="#xsec-pengalaman" onclick="return navClick(event,'pengalaman')">Pengalaman Kerja</a>
-      <a href="#xsec-organisasi" onclick="return navClick(event,'organisasi')">Pengalaman Organisasi</a>
-      <a href="#sertifikasi" onclick="document.getElementById('menuOverlay').classList.remove('open')">Sertifikasi</a>
-      <a href="#kontak" onclick="document.getElementById('menuOverlay').classList.remove('open')">Kontak</a>
-    </div>
     <div class="menu-links">
       <a href="sharing.html"><span class="menu-icon">📖</span>Sharing with Avin</a>
       <a href="buat-cv.html"><span class="menu-icon">📄</span>Buat CV with Avin</a>
@@ -898,14 +899,16 @@
     <div class="xsec-detail-wrap">
       <div class="xsec-detail-inner">
         <div class="xsec-detail">
-          <div class="xsec-detail-media" onclick="openLightbox('images/profil-detail.jpg')">
+          <div class="xsec-media-block" onclick="openLightbox('images/profil-detail.jpg')">
             <img src="images/profil-detail.jpg" alt="Ali Avvienceena Al Attqia">
           </div>
-          <div class="xsec-detail-body">
+          <div class="xsec-media-textbox">
             <div class="xsec-detail-name">Ali Avvienceena Al Attqia</div>
             <span class="xsec-detail-sub">Fresh Graduate — Ekonomi Syariah</span>
+            <div class="xsec-detail-body">
             <p>Saya Ali Avvienceena Al Attqia — biasa dipanggil Avin — lulusan S1 Ekonomi Syariah dari UIN Siber Syekh Nurjati Cirebon. Ketertarikan saya pada dunia keuangan syariah tumbuh dari keinginan sederhana: memastikan sistem ekonomi yang saya jalani sehari-hari tetap selaras dengan nilai yang saya yakini.</p>
             <p>Pengalaman magang di Bank Syariah Indonesia mengajarkan saya bahwa detail kecil — sehelai dokumen, satu pesan ke nasabah, satu percakapan di depan warung — bisa membawa dampak besar kalau dikerjakan dengan amanah. Di luar pekerjaan, saya menikmati hal-hal yang melatih ketelitian dan kesabaran, salah satunya menyusun rubik.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -931,14 +934,16 @@
     <div class="xsec-detail-wrap">
       <div class="xsec-detail-inner">
         <div class="xsec-detail">
-          <div class="xsec-detail-media" onclick="openLightbox('images/pendidikan-detail.jpg')">
+          <div class="xsec-media-block" onclick="openLightbox('images/pendidikan-detail.jpg')">
             <img src="images/pendidikan-detail.jpg" alt="Ali Avvienceena Al Attqia">
           </div>
-          <div class="xsec-detail-body">
+          <div class="xsec-media-textbox">
             <div class="xsec-detail-name">S1 Ekonomi Syariah</div>
             <span class="xsec-detail-sub">UIN Siber Syekh Nurjati Cirebon · 2022–2026</span>
+            <div class="xsec-detail-body">
             <p>Menyelesaikan studi Sarjana Ekonomi Syariah dengan fokus pada ekonomi dan keuangan syariah — mulai dari akad muamalah, manajemen risiko syariah, hingga praktik operasional perbankan syariah. Skripsi berjudul <em>"Analisis Pengaruh Kesenjangan Digital, Infrastruktur Teknologi, dan Keterampilan Digital terhadap Pertumbuhan Ekonomi di Indonesia Tahun 2011–2024."</em></p>
             <p>Sebelumnya menempuh pendidikan menengah di SMA NU Sukra. Selama masa studi, saya aktif mengasah kemampuan analitis lewat SQL dan Python, serta memperkuat kemampuan bahasa lewat sertifikasi TOEFL dan Bahasa Arab.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -972,27 +977,31 @@
               </video>
               <div class="bsi-video-fade" id="bsiVideoFade"></div>
             </div>
-            <div class="bsi-video-caption">Sesi persiapan sebelum mapping wilayah 3 km</div>
-            <div class="xsec-detail-body no-media">
+            <div class="xsec-media-textbox">
+              <div class="bsi-video-caption">Video: sesi persiapan sebelum mapping wilayah 3 km</div>
               <div class="xsec-detail-name">Bank Syariah Indonesia (BSI)</div>
               <span class="xsec-detail-sub">KCP Cirebon Plered 1 — Customer Service & Marketing Assistant</span>
+              <div class="xsec-detail-body">
               <p>Selama magang di BSI KCP Cirebon Plered 1, saya dipercaya menangani berbagai sisi operasional cabang — membantu nasabah melengkapi data di meja Customer Service, memilah dokumen pengajuan pembiayaan, hingga mencatat keluar-masuk barang jaminan di unit gadai lewat sistem internal NOOS.</p>
               <p>Di sisi pemasaran, saya menjalankan komunikasi digital untuk mendukung migrasi nasabah dari BSI Mobile ke Byond by BSI dan promosi Tabungan Haji. Saya juga terlibat dalam mapping radius 3 km dari kantor cabang — video di atas diambil saat sesi persiapan sebelum turun langsung mengenalkan produk seperti Cicil Emas, Gadai Emas, dan KUR Syariah ke pelaku UMKM sekitar.</p>
+              </div>
             </div>
           </div>
 
           <div class="xsec-sub-divider"></div>
 
           <div class="xsec-sub">
-            <div class="xsec-sub-media-pair">
-              <img src="images/patra-jasa-doc.jpg" alt="Dokumentasi kegiatan di PT Patra Jasa" onclick="openLightbox('images/patra-jasa-doc.jpg')">
-              <img src="images/patra-jasa-doc-2.jpg" alt="Dokumentasi ballroom acara PT Patra Jasa" onclick="openLightbox('images/patra-jasa-doc-2.jpg')">
+            <div class="xsec-media-block" onclick="openLightbox('images/patra-jasa-doc.jpg')">
+              <img src="images/patra-jasa-doc.jpg" alt="Dokumentasi kegiatan di PT Patra Jasa">
             </div>
-            <div class="xsec-detail-body">
+            <div class="xsec-media-textbox">
               <div class="xsec-detail-name">PT Patra Jasa</div>
               <span class="xsec-detail-sub">Banquet Staff</span>
+              <div class="xsec-detail-body">
               <p>Sebagai Banquet Staff, saya mengoordinasikan proses set-up dan clear-up ruang acara, serta mengelola permintaan barang operasional (store requisition) demi kelancaran logistik. Salah satu momen berkesan: menangani operasional acara berskala besar yang dihadiri hingga 500 peserta.</p>
+              </div>
             </div>
+            <img class="xsec-media-extra" src="images/patra-jasa-doc-2.jpg" alt="Dokumentasi ballroom acara PT Patra Jasa" onclick="openLightbox('images/patra-jasa-doc-2.jpg')">
           </div>
 
         </div>

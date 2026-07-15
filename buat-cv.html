@@ -291,6 +291,18 @@
     padding: 10px 22px; cursor: pointer;
   }
 
+  /* CLARIFYING QUESTIONS STATE */
+  .questions-screen { display: none; padding: 30px 0 60px; }
+  .questions-screen.show { display: block; }
+  .questions-intro { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 28px; }
+  .questions-intro strong { color: var(--ink); }
+  .questions-submit-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.02em;
+    color: #0A0A0A; background: linear-gradient(90deg, var(--gold), #e8c869);
+    border: none; border-radius: 100px; padding: 14px 26px; cursor: pointer;
+    margin-top: 8px;
+  }
+
   /* RESULT / CV PREVIEW */
   .result-section { display: none; padding: 40px 0 70px; }
   .result-section.show { display: block; }
@@ -514,6 +526,13 @@
     <button class="error-retry-btn" onclick="backToForm()">← Kembali ke form</button>
   </section>
 
+  <!-- ============ CLARIFYING QUESTIONS ============ -->
+  <section class="questions-screen" id="questionsScreen">
+    <div class="questions-intro">🔎 AI sudah menjelajahi internet buat riset singkat soal posisi/industri yang kamu incar. Sebelum CV final dibuat, jawab dulu beberapa hal ini biar hasilnya lebih matang dan <strong>terukur</strong> — nggak cuma klaim umum tanpa bukti.</div>
+    <div id="questionsWrap"></div>
+    <button class="questions-submit-btn" onclick="submitAnswers()">Lanjutkan & Buat CV →</button>
+  </section>
+
   <!-- ============ RESULT ============ -->
   <section class="result-section" id="resultSection">
     <div class="result-toolbar">
@@ -703,11 +722,12 @@
     document.getElementById('confirmOverlay').classList.remove('show');
   }
 
+  let pendingQuestions = [];
+
   function confirmAndGenerate() {
     document.getElementById('confirmOverlay').classList.remove('show');
     if (pendingCVData) {
-      generateCV(pendingCVData);
-      pendingCVData = null;
+      runResearch(pendingCVData);
     }
   }
 
@@ -733,6 +753,8 @@
 7. Bahasa CV: Bahasa Indonesia. Istilah teknis/nama alat/software yang lazimnya berbahasa Inggris (misal: Customer Service, Microsoft Excel, Public Speaking) boleh tetap dalam Bahasa Inggris, dan tandai kata/istilah tersebut dengan <em>...</em> untuk dicetak miring.
 8. Jangan batasi panjang CV pada satu halaman — sesuaikan secara alami dengan isi.
 9. Jika pengguna tidak mengisi suatu kategori (organisasi/sertifikat/salah satu jenis keterampilan), JANGAN buat entri kosong untuk kategori itu — cukup kembalikan array kosong.
+10. Gaya bahasa: HINDARI kalimat generik ala-AI/buzzword kosong tanpa substansi (contoh yang HARUS dihindari: "menghasilkan hasil yang optimal", "memastikan kelancaran operasional", "meningkatkan efisiensi" tanpa angka pendukung, "berkontribusi signifikan" tanpa penjelasan). Setiap klaim pencapaian harus konkret dan terukur — SELALU sertakan angka/skala/perbandingan jika tersedia (baik dari cerita awal maupun dari "Catatan tambahan hasil klarifikasi pengguna"). Contoh benar: "Menangani rata-rata 40 transaksi nasabah per hari" (bukan "menangani banyak transaksi nasabah"). Jika memang tidak ada angka yang bisa didapat sama sekali, gunakan bahasa deskriptif yang jujur tentang tugasnya, jangan dipaksakan jadi klaim pencapaian palsu.
+11. Format periode WAJIB konsisten: pola "[Bulan Mulai] – [Bulan Selesai] [Tahun]" atau "[Tahun Mulai] – [Tahun Selesai]" (gunakan tanda "–" dengan spasi di kedua sisi). Ubah ke format ini apa pun kata penghubung asli dari pengguna (misal "dari Februari sampai Juni 2025" atau "Februari s/d Juni 2025" harus ditulis ulang jadi "Februari – Juni 2025"). Jika tahun mulai dan selesai berbeda, tulis tahun di kedua sisi (misal "Agustus 2022 – Juni 2026"). Jika hanya beda bulan tapi tahun sama, cukup tulis tahun sekali di akhir (misal "Februari – Juni 2025").
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), dengan struktur PERSIS seperti berikut:
 {
@@ -758,7 +780,66 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
     text += buildCategoryText(data.kerjaEntries, 'Pengalaman Kerja') + '\n';
     if (data.orgEntries.length) text += buildCategoryText(data.orgEntries, 'Pengalaman Organisasi') + '\n';
     if (data.sertifEntries.length) text += buildCategoryText(data.sertifEntries, 'Sertifikat') + '\n';
+    if (data.catatanTambahan) text += `\nCatatan tambahan hasil klarifikasi dengan pengguna (gunakan untuk melengkapi/mempertajam informasi di atas):\n${data.catatanTambahan}\n`;
     return text;
+  }
+
+  /* ============ Research & clarifying questions (before final generation) ============ */
+  const RESEARCH_INSTRUCTION = `Kamu adalah asisten riset untuk membantu menyusun CV yang matang. Kamu punya akses pencarian web (Google Search).
+
+Tugasmu:
+1. Jika ada "Posisi yang dilamar" dan/atau nama institusi/perusahaan yang disebutkan di data pengguna, cari sekilas info tentang industri, tanggung jawab umum, atau skill yang biasa dicari untuk posisi tersebut lewat pencarian web.
+2. Periksa SETIAP entri pendidikan dan pengalaman kerja/organisasi milik pengguna. Untuk entri yang TIDAK menyebutkan rentang waktu (bulan/tahun mulai-selesai) sama sekali, buat SATU pertanyaan singkat menanyakan periode tersebut.
+3. Untuk setiap klaim pencapaian yang masih samar/tidak terukur (kata seperti "meningkatkan", "membantu", "mengelola", "mempercepat" tanpa angka/skala pembanding), buat SATU pertanyaan yang menggali angka atau bukti nyata di baliknya. Jangan bertanya soal hal yang sudah jelas angkanya.
+4. Buat MAKSIMAL 6 pertanyaan total, prioritaskan yang paling berdampak ke kekuatan CV. Jangan bertanya hal yang sudah lengkap dijawab pengguna.
+5. Bahasa pertanyaan: santai, jelas, Bahasa Indonesia, seperti manusia bertanya langsung ke pengguna — bukan format formulir kaku.
+
+Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), struktur PERSIS:
+{
+  "questions": [
+    { "id": "q1", "question": "string pertanyaan", "placeholder": "string contoh singkat jawaban" }
+  ]
+}
+Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
+
+  async function runResearch(data) {
+    showLoading('Menjelajahi internet untuk riset industri...');
+    const userPrompt = buildUserPrompt(data);
+
+    try {
+      const response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            { role: 'user', parts: [{ text: RESEARCH_INSTRUCTION + '\n\n--- DATA PENGGUNA ---\n' + userPrompt }] }
+          ],
+          tools: [{ google_search: {} }],
+          generationConfig: { temperature: 0.4 }
+        })
+      });
+
+      if (!response.ok) throw new Error('API error: ' + response.status);
+
+      const result = await response.json();
+      const rawText = (result.candidates[0].content.parts || []).map(p => p.text || '').join('');
+      const cleaned = rawText.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      const questions = (parsed.questions || []).slice(0, 6);
+
+      if (questions.length === 0) {
+        generateCV(data);
+        pendingCVData = null;
+      } else {
+        pendingQuestions = questions;
+        renderQuestions(questions);
+        showQuestions();
+      }
+    } catch (err) {
+      console.error('Riset gagal, lanjut generate langsung:', err);
+      generateCV(data);
+      pendingCVData = null;
+    }
   }
 
   async function generateCV(data) {
@@ -868,15 +949,18 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   }
 
   /* ============ State switching ============ */
-  function showLoading() {
+  function showLoading(message) {
     document.getElementById('formSection').style.display = 'none';
     document.getElementById('errorScreen').classList.remove('show');
     document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('questionsScreen').classList.remove('show');
     document.getElementById('loadingScreen').classList.add('show');
+    document.querySelector('.loading-text').textContent = message || 'Menganalisis pengalamanmu...';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function showResult() {
     document.getElementById('loadingScreen').classList.remove('show');
+    document.getElementById('questionsScreen').classList.remove('show');
     document.getElementById('resultSection').classList.add('show');
     typeWriter('aiNote', 'Jika hasilnya belum memuaskan, kamu hanya perlu mengklik tombol kembali ke form dan edit.');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -910,8 +994,40 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   function backToForm() {
     document.getElementById('resultSection').classList.remove('show');
     document.getElementById('errorScreen').classList.remove('show');
+    document.getElementById('questionsScreen').classList.remove('show');
     document.getElementById('formSection').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showQuestions() {
+    document.getElementById('loadingScreen').classList.remove('show');
+    document.getElementById('questionsScreen').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderQuestions(questions) {
+    const wrap = document.getElementById('questionsWrap');
+    wrap.innerHTML = questions.map((q, i) => `
+      <div class="field-group">
+        <div class="field-label">${i + 1}. ${escapeHtml(q.question)}</div>
+        <div class="field-entry">
+          <textarea id="qAnswer_${escapeHtml(q.id)}" placeholder="${escapeHtml(q.placeholder || 'Ketik jawabanmu di sini')}"></textarea>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function submitAnswers() {
+    const answers = pendingQuestions.map(q => {
+      const el = document.getElementById('qAnswer_' + q.id);
+      const val = el ? el.value.trim() : '';
+      return `- ${q.question} → ${val || '(tidak dijawab)'}`;
+    });
+    if (pendingCVData) {
+      pendingCVData.catatanTambahan = answers.join('\n');
+      generateCV(pendingCVData);
+      pendingCVData = null;
+    }
   }
 </script>
 

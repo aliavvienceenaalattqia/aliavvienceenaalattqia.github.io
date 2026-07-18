@@ -323,7 +323,7 @@
   }
   h1.hero-title em {
     font-style: normal;
-    background: linear-gradient(90deg, var(--gold), var(--blue));
+    background: linear-gradient(90deg, #FFFFFF, var(--blue));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -356,6 +356,13 @@
     border-radius: 12px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease, background .35s ease;
+  }
+  .stat:hover, .stat:active {
+    transform: translateY(-8px);
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(0,180,255,0.45);
+    box-shadow: 0 14px 40px rgba(0,180,255,0.16), 0 6px 18px rgba(0,0,0,0.45);
   }
   .stat .num {
     font-family: 'JetBrains Mono', monospace;
@@ -745,6 +752,18 @@
   .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity: 1; transform: translateY(0); }
 
+  .reveal-slide-l { opacity: 0; transform: translateX(-46px); transition: opacity .7s cubic-bezier(.22,.9,.32,1), transform .7s cubic-bezier(.22,.9,.32,1); }
+  .reveal-slide-l.in { opacity: 1; transform: translateX(0); }
+
+  .reveal-slide-r { opacity: 0; transform: translateX(46px); transition: opacity .7s cubic-bezier(.22,.9,.32,1), transform .7s cubic-bezier(.22,.9,.32,1); }
+  .reveal-slide-r.in { opacity: 1; transform: translateX(0); }
+
+  .reveal-scale { opacity: 0; transform: scale(0.88); transition: opacity .65s ease, transform .65s ease; }
+  .reveal-scale.in { opacity: 1; transform: scale(1); }
+
+  .reveal-blur { opacity: 0; filter: blur(16px); transform: translateY(18px); transition: opacity .8s ease, filter .8s ease, transform .8s ease; }
+  .reveal-blur.in { opacity: 1; filter: blur(0); transform: translateY(0); }
+
   .scroll-progress {
     position: fixed;
     top: 0; left: 0;
@@ -853,7 +872,7 @@
 
 <div class="wrap">
 
-  <div class="stat-row reveal">
+  <div class="stat-row reveal-scale">
     <div class="stat">
       <div class="num" data-count="587" data-suffix="">0</div>
       <div class="label">TOEFL / ELProTe Score</div>
@@ -876,7 +895,7 @@
     <div class="xsec-cover">
       <img class="xsec-cover-img" src="images/profil-detail.jpg" alt="Ali Avvienceena Al Attqia">
       <div class="xsec-cover-overlay"></div>
-      <div class="xsec-cover-content">
+      <div class="xsec-cover-content reveal-blur">
         <h2 class="xsec-title">Profile</h2>
         <p class="xsec-desc">An Islamic Economics graduate who believes professional work and Islamic values can go hand in hand — from the classroom to the customer service desk.</p>
         <button class="xsec-btn" onclick="toggleXsec('profil')">Get to Know Me <span class="arw">↓</span></button>
@@ -905,7 +924,7 @@
     <div class="xsec-cover">
       <img class="xsec-cover-img" src="images/pendidikan-cover.jpg" alt="UIN Siber Syekh Nurjati Cirebon campus">
       <div class="xsec-cover-overlay"></div>
-      <div class="xsec-cover-content">
+      <div class="xsec-cover-content reveal-blur">
         <h2 class="xsec-title">Education</h2>
         <p class="xsec-desc">Four years studying Islamic economics and finance — from the theory of contracts to hands-on practice in the field.</p>
         <button class="xsec-btn" onclick="toggleXsec('pendidikan')">See My Education Journey <span class="arw">↓</span></button>
@@ -934,7 +953,7 @@
     <div class="xsec-cover">
       <img class="xsec-cover-img" src="images/pengalaman-cover.jpg" alt="Operational activities">
       <div class="xsec-cover-overlay"></div>
-      <div class="xsec-cover-content">
+      <div class="xsec-cover-content reveal-blur">
         <h2 class="xsec-title">Experience</h2>
         <p class="xsec-desc">From the customer service desk at Bank Syariah Indonesia to large-scale event operations at PT Patra Jasa — two different worlds that taught me the same lesson: precision and accountability.</p>
         <button class="xsec-btn" onclick="toggleXsec('pengalaman')">See Experience Details <span class="arw">↓</span></button>
@@ -992,7 +1011,7 @@
     <div class="xsec-cover">
       <img class="xsec-cover-img" src="images/organisasi-cover.jpg" alt="Activities with organization members">
       <div class="xsec-cover-overlay"></div>
-      <div class="xsec-cover-content">
+      <div class="xsec-cover-content reveal-blur">
         <h2 class="xsec-title">Organizations</h2>
         <p class="xsec-desc">Learning to build partnerships and manage resources through a student entrepreneurship organization.</p>
         <button class="xsec-btn" onclick="toggleXsec('organisasi')">See My Role in the Organization <span class="arw">↓</span></button>
@@ -1012,12 +1031,12 @@
   </div>
 
   <section id="sertifikasi">
-    <div class="section-head">
+    <div class="section-head reveal-slide-l">
       <span class="section-num">05</span>
       <span class="section-title">Certifications</span>
     </div>
 
-    <div class="cert-stack-wrap" id="certStackWrap">
+    <div class="cert-stack-wrap reveal-scale" id="certStackWrap">
       <div class="cert-stack" id="certStack" role="button" tabindex="0" aria-label="View all certificates"></div>
       <div class="cert-stack-hint"><span class="pulse-dot"></span> TAP THE STACK TO VIEW ALL CERTIFICATES</div>
     </div>
@@ -1122,7 +1141,7 @@
   </section>
 
   <section id="kontak">
-    <div class="contact reveal">
+    <div class="contact reveal-slide-r">
       <h2>Open to opportunities in Islamic economics & finance.</h2>
       <div class="contact-links">
         <a class="contact-row" href="mailto:avinatqia@gmail.com">
@@ -1258,7 +1277,7 @@
   document.querySelectorAll('.timeline .exp-item').forEach((el, i) => {
     el.style.transitionDelay = (i * 0.12) + 's';
   });
-  const revealEls = document.querySelectorAll('.reveal, .exp-item');
+  const revealEls = document.querySelectorAll('.reveal, .reveal-slide-l, .reveal-slide-r, .reveal-scale, .reveal-blur, .exp-item');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

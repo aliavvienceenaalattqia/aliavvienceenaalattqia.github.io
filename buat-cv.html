@@ -523,7 +523,7 @@
   <section class="error-screen" id="errorScreen">
     <div class="error-emoji">:(</div>
     <div class="error-text">Kayaknya kamu ngelag deh, coba cek lagi internet kamu. Atau jangan-jangan kredit AI-nya habis ya? Coba balik lagi besok ya!</div>
-    <button class="error-retry-btn" onclick="backToForm()">← Kembali ke form</button>
+    <button class="error-retry-btn" onclick="retryGenerate()">↻ Coba lagi</button>
   </section>
 
   <!-- ============ CLARIFYING QUESTIONS ============ -->
@@ -744,17 +744,27 @@
   /* ============ Build prompt & call Gemini ============ */
   const HIDDEN_INSTRUCTION = `Kamu adalah asisten pembuat CV profesional berbahasa Indonesia. Tugasmu: mengubah cerita mentah pengguna menjadi CV profesional, mengikuti aturan ketat berikut (disintesis dari masukan beberapa HR):
 
-1. Tanpa foto, format ATS-friendly (teks murni, tanpa tabel rumit).
-2. Bagian profil singkat: ringkas, to-the-point, bahasa profesional namun sederhana. Gunakan "Posisi yang dilamar" (jika disebutkan) HANYA sebagai konteks untuk menentukan nada/penekanan bahasa profil — JANGAN pernah menuliskan ulang teks posisi tersebut secara mentah/verbatim di bagian manapun pada hasil JSON.
+1. Tanpa foto, format ATS-friendly (teks murni, tanpa tabel rumit, satu kolom).
+2. Bagian profil WAJIB pakai "Metode Vina" — satu paragraf padat berisi TEPAT 3 kalimat inti, mengalir tanpa jeda baris:
+   a) Kalimat 1 (Latar Belakang): sebutkan gelar, jurusan, dan institusi pendidikan secara ringkas.
+   b) Kalimat 2 (Aspirasi Karier): sebutkan sifat kerja/kepribadian yang relevan (misal teliti, cepat belajar, berorientasi detail) dan arah/minat karier di bidang atau industri tertentu. Gunakan "Posisi yang dilamar" (jika ada) HANYA sebagai konteks penentu arah aspirasi ini — JANGAN menuliskan ulang teks posisi itu secara verbatim.
+   c) Kalimat 3 (Kemampuan yang Relevan): sebutkan kemampuan/skill utama yang paling menonjol dan sudah terbukti dari cerita pengguna — bukan daftar lengkap semua skill, cukup yang paling relevan.
+   Total keseluruhan profil harus singkat dan padat (target 3 kalimat, jangan bertele-tele).
 3. Bagian pendidikan: untuk SETIAP entri pendidikan, pisahkan menjadi institusi, program studi, dan periode. WAJIB: jika pengguna menyebutkan tahun/periode (misal "2022–2026", "lulus 2020", "Agustus 2016 - Agustus 2020"), SELALU ekstrak dan cantumkan apa adanya di field "periode". Hanya kosongkan field "periode" jika pengguna benar-benar tidak menyebutkan info waktu apapun. IPK atau fokus studi (jika disebutkan) masuk ke field "keterangan".
 4. Keterampilan: pisahkan menjadi dua kelompok — "keterampilan_teknis" (hard skill: software, bahasa pemrograman, alat, sertifikasi teknis, dsb) dan "keterampilan_lunak" (soft skill: komunikasi, kerja tim, kepemimpinan, manajemen waktu, dsb). Jika ada beberapa skill yang berkaitan/tumpang tindih dalam satu kelompok, gabungkan jadi satu item, jangan diulang-ulang.
-5. Setiap pengalaman kerja/organisasi: analisis dan tentukan istilah posisi/jabatan yang tepat dan wajar berdasarkan tugas yang diceritakan. Tulis ulang setiap tugas dengan bahasa CV profesional yang achievement-based (menonjolkan hasil/pencapaian), BUKAN sekadar daftar tugas administratif mentah. Sesuaikan penekanan dengan posisi yang dilamar jika disebutkan (tanpa menuliskan ulang teks posisi itu secara verbatim). WAJIB: jika pengguna menyebutkan periode/waktu (bulan, tahun, durasi), SELALU ekstrak dan cantumkan apa adanya di field "periode". Hanya kosongkan jika benar-benar tidak disebutkan.
+5. Setiap bullet pengalaman kerja/organisasi WAJIB mengikuti "Formula XYZ", digabung jadi SATU kalimat mengalir (bukan dipecah beberapa kalimat terpisah):
+   - X = Hasil/perubahan yang dicapai (apa yang berhasil dilakukan/diubah).
+   - Y = Ukuran keberhasilan (angka, persentase, jumlah, atau target) — HANYA jika pengguna memberikan datanya, baik dari cerita awal maupun "Catatan tambahan hasil klarifikasi".
+   - Z = Cara mencapainya (strategi, tools, atau metode yang dipakai).
+   Contoh pola: "[X] sebesar/menjadi [Y] melalui/dengan [Z]." Contoh nyata: "Meningkatkan rata-rata jangkauan konten sebesar 35% dalam tiga bulan melalui evaluasi performa dan penyesuaian format berbasis tren." Jika Y (angka) benar-benar tidak tersedia dari pengguna, gabungkan X+Z saja — JANGAN mengarang angka.
+   Analisis dan tentukan istilah posisi/jabatan yang tepat dan wajar berdasarkan tugas yang diceritakan. Buat MAKSIMAL 3 bullet per entri pengalaman — pilih yang paling berdampak, padat, dan tidak bertele-tele; boleh menggabungkan beberapa tugas serupa jadi satu bullet demi keringkasan.
 6. PENTING — tetap konservatif dan jujur: JANGAN mengarang angka, persentase, tahun, atau pencapaian yang tidak disebutkan pengguna. Jika pengguna tidak menyebutkan angka, deskripsikan tugas dengan bahasa yang diperhalus dan profesional TANPA membuat klaim pencapaian palsu. Jangan melebih-lebihkan level jabatan di luar kewajaran dari cerita yang diberikan.
 7. Bahasa CV: Bahasa Indonesia. Istilah teknis/nama alat/software yang lazimnya berbahasa Inggris (misal: Customer Service, Microsoft Excel, Public Speaking) boleh tetap dalam Bahasa Inggris, dan tandai kata/istilah tersebut dengan <em>...</em> untuk dicetak miring.
 8. Jangan batasi panjang CV pada satu halaman — sesuaikan secara alami dengan isi.
 9. Jika pengguna tidak mengisi suatu kategori (organisasi/sertifikat/salah satu jenis keterampilan), JANGAN buat entri kosong untuk kategori itu — cukup kembalikan array kosong.
-10. Gaya bahasa: HINDARI kalimat generik ala-AI/buzzword kosong tanpa substansi (contoh yang HARUS dihindari: "menghasilkan hasil yang optimal", "memastikan kelancaran operasional", "meningkatkan efisiensi" tanpa angka pendukung, "berkontribusi signifikan" tanpa penjelasan). Setiap klaim pencapaian harus konkret dan terukur — SELALU sertakan angka/skala/perbandingan jika tersedia (baik dari cerita awal maupun dari "Catatan tambahan hasil klarifikasi pengguna"). Contoh benar: "Menangani rata-rata 40 transaksi nasabah per hari" (bukan "menangani banyak transaksi nasabah"). Jika memang tidak ada angka yang bisa didapat sama sekali, gunakan bahasa deskriptif yang jujur tentang tugasnya, jangan dipaksakan jadi klaim pencapaian palsu.
+10. Gaya bahasa: HINDARI kalimat generik ala-AI/buzzword kosong tanpa substansi (contoh yang HARUS dihindari: "menghasilkan hasil yang optimal", "memastikan kelancaran operasional", "meningkatkan efisiensi" tanpa angka pendukung, "berkontribusi signifikan" tanpa penjelasan).
 11. Format periode WAJIB konsisten: pola "[Bulan Mulai] – [Bulan Selesai] [Tahun]" atau "[Tahun Mulai] – [Tahun Selesai]" (gunakan tanda "–" dengan spasi di kedua sisi). Ubah ke format ini apa pun kata penghubung asli dari pengguna (misal "dari Februari sampai Juni 2025" atau "Februari s/d Juni 2025" harus ditulis ulang jadi "Februari – Juni 2025"). Jika tahun mulai dan selesai berbeda, tulis tahun di kedua sisi (misal "Agustus 2022 – Juni 2026"). Jika hanya beda bulan tapi tahun sama, cukup tulis tahun sekali di akhir (misal "Februari – Juni 2025").
+12. Kata kunci ATS: jika ada daftar "Kata kunci relevan untuk posisi ini" di akhir prompt, sisipkan secara natural ke profil/bullet/keterampilan HANYA jika relevan dan didukung fakta dari pengalaman pengguna — JANGAN memasukkan kata kunci yang tidak ada dasarnya, karena itu membuat CV terlihat tidak jujur.
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), dengan struktur PERSIS seperti berikut:
 {
@@ -788,7 +798,7 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   const RESEARCH_INSTRUCTION = `Kamu adalah asisten riset untuk membantu menyusun CV yang matang. Kamu punya akses pencarian web (Google Search).
 
 Tugasmu:
-1. Jika ada "Posisi yang dilamar" dan/atau nama institusi/perusahaan yang disebutkan di data pengguna, cari sekilas info tentang industri, tanggung jawab umum, atau skill yang biasa dicari untuk posisi tersebut lewat pencarian web.
+1. Jika ada "Posisi yang dilamar" dan/atau nama institusi/perusahaan yang disebutkan di data pengguna, cari sekilas info tentang industri, tanggung jawab umum, atau skill yang biasa dicari untuk posisi tersebut lewat pencarian web. Rangkum 5–10 kata kunci (keyword) yang relevan dan sering dicari sistem ATS/rekruter untuk posisi ini (bisa berupa skill teknis, tools, atau istilah industri), masukkan ke field "keywords". Jika tidak ada posisi/institusi yang disebutkan, kembalikan "keywords" kosong.
 2. Periksa SETIAP entri pendidikan dan pengalaman kerja/organisasi milik pengguna. Untuk entri yang TIDAK menyebutkan rentang waktu (bulan/tahun mulai-selesai) sama sekali, buat SATU pertanyaan singkat menanyakan periode tersebut.
 3. Untuk setiap klaim pencapaian yang masih samar/tidak terukur (kata seperti "meningkatkan", "membantu", "mengelola", "mempercepat" tanpa angka/skala pembanding), buat SATU pertanyaan yang menggali angka atau bukti nyata di baliknya. Jangan bertanya soal hal yang sudah jelas angkanya.
 4. Buat MAKSIMAL 6 pertanyaan total, prioritaskan yang paling berdampak ke kekuatan CV. Jangan bertanya hal yang sudah lengkap dijawab pengguna.
@@ -796,27 +806,49 @@ Tugasmu:
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), struktur PERSIS:
 {
+  "keywords": ["string", "string"],
   "questions": [
     { "id": "q1", "question": "string pertanyaan", "placeholder": "string contoh singkat jawaban" }
   ]
 }
 Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
 
-  async function callGeminiRaw(body) {
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!response.ok) {
-      const errText = await response.text().catch(() => '');
-      throw new Error('API error: ' + response.status + ' ' + errText.slice(0, 300));
+  function extractJSON(rawText) {
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
+    try {
+      return JSON.parse(cleaned);
+    } catch (e) {
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (match) return JSON.parse(match[0]);
+      throw e;
     }
-    return response.json();
+  }
+
+  async function callGeminiRaw(body, timeoutMs) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 30000);
+    try {
+      const response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        throw new Error('API error: ' + response.status + ' ' + errText.slice(0, 300));
+      }
+      return await response.json();
+    } catch (e) {
+      if (e.name === 'AbortError') throw new Error('Timeout: server tidak merespons dalam waktu wajar.');
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async function runResearch(data) {
-    showLoading('Menjelajahi internet untuk riset industri...');
+    showLoading(LOADING_MESSAGES_RESEARCH);
     const userPrompt = buildUserPrompt(data);
     const promptText = RESEARCH_INSTRUCTION + '\n\n--- DATA PENGGUNA ---\n' + userPrompt;
 
@@ -826,14 +858,14 @@ Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
         contents: [{ role: 'user', parts: [{ text: promptText }] }],
         tools: [{ google_search: {} }],
         generationConfig: { temperature: 0.4 }
-      });
+      }, 20000);
     } catch (errWithTools) {
       console.error('Riset dengan pencarian web gagal, coba ulang tanpa pencarian web:', errWithTools);
       try {
         result = await callGeminiRaw({
           contents: [{ role: 'user', parts: [{ text: promptText }] }],
           generationConfig: { temperature: 0.4 }
-        });
+        }, 20000);
       } catch (errNoTools) {
         console.error('Riset tetap gagal, lanjut generate CV langsung:', errNoTools);
         generateCV(data);
@@ -844,9 +876,9 @@ Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
 
     try {
       const rawText = (result.candidates[0].content.parts || []).map(p => p.text || '').join('');
-      const cleaned = rawText.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
+      const parsed = extractJSON(rawText);
       const questions = (parsed.questions || []).slice(0, 6);
+      data.keywordsATS = Array.isArray(parsed.keywords) ? parsed.keywords.slice(0, 12) : [];
 
       if (questions.length === 0) {
         generateCV(data);
@@ -863,30 +895,31 @@ Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
     }
   }
 
+  let lastGenerateData = null;
+
   async function generateCV(data) {
-    showLoading();
+    lastGenerateData = data;
+    showLoading(LOADING_MESSAGES_GENERATE);
     const userPrompt = buildUserPrompt(data);
+    let keywordLine = '';
+    if (data.keywordsATS && data.keywordsATS.length) {
+      keywordLine = `\n\nKata kunci relevan untuk posisi ini (sisipkan secara natural ke profil/bullet/keterampilan HANYA jika relevan dan didukung fakta dari pengalaman pengguna, JANGAN dipaksakan jika tidak ada dasarnya): ${data.keywordsATS.join(', ')}`;
+    }
 
     try {
-      const response = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            { role: 'user', parts: [{ text: HIDDEN_INSTRUCTION + '\n\n--- INPUT PENGGUNA ---\n' + userPrompt }] }
-          ],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            temperature: 0.5
-          }
-        })
-      });
+      const result = await callGeminiRaw({
+        contents: [
+          { role: 'user', parts: [{ text: HIDDEN_INSTRUCTION + keywordLine + '\n\n--- INPUT PENGGUNA ---\n' + userPrompt }] }
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.5,
+          maxOutputTokens: 16384
+        }
+      }, 45000);
 
-      if (!response.ok) throw new Error('API error: ' + response.status);
-
-      const result = await response.json();
       const rawText = result.candidates[0].content.parts[0].text;
-      const parsed = JSON.parse(rawText);
+      const parsed = extractJSON(rawText);
 
       renderCV(data.nama, data.kontak, data.posisi, parsed);
       showResult();
@@ -970,16 +1003,48 @@ Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
   }
 
   /* ============ State switching ============ */
-  function showLoading(message) {
+  let loadingRotateTimer = null;
+  const LOADING_MESSAGES_RESEARCH = [
+    'Menjelajahi internet untuk riset industri...',
+    'Meninjau tanggung jawab umum posisi ini...',
+    'Membandingkan dengan standar industri terkini...',
+    'Mengecek kelengkapan informasi yang kamu tulis...',
+    'Menyusun pertanyaan lanjutan yang relevan...'
+  ];
+  const LOADING_MESSAGES_GENERATE = [
+    'Menganalisis pengalamanmu...',
+    'Merapikan bahasa jadi lebih profesional...',
+    'Menyusun struktur CV sesuai standar ATS...',
+    'Menajamkan kalimat pencapaianmu...',
+    'Menyelesaikan sentuhan akhir...'
+  ];
+
+  function stopLoadingRotate() {
+    if (loadingRotateTimer) { clearInterval(loadingRotateTimer); loadingRotateTimer = null; }
+  }
+
+  function showLoading(messages) {
     document.getElementById('formSection').style.display = 'none';
     document.getElementById('errorScreen').classList.remove('show');
     document.getElementById('resultSection').classList.remove('show');
     document.getElementById('questionsScreen').classList.remove('show');
     document.getElementById('loadingScreen').classList.add('show');
-    document.querySelector('.loading-text').textContent = message || 'Menganalisis pengalamanmu...';
+
+    const list = (Array.isArray(messages) && messages.length) ? messages : LOADING_MESSAGES_GENERATE;
+    const textEl = document.querySelector('.loading-text');
+    let i = 0;
+    textEl.textContent = list[0];
+    stopLoadingRotate();
+    if (list.length > 1) {
+      loadingRotateTimer = setInterval(() => {
+        i = (i + 1) % list.length;
+        textEl.textContent = list[i];
+      }, 2600);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function showResult() {
+    stopLoadingRotate();
     document.getElementById('loadingScreen').classList.remove('show');
     document.getElementById('questionsScreen').classList.remove('show');
     document.getElementById('resultSection').classList.add('show');
@@ -1008,11 +1073,20 @@ Jika benar-benar tidak ada yang perlu ditanyakan, kembalikan "questions": [].`;
     step();
   }
   function showError() {
+    stopLoadingRotate();
     document.getElementById('loadingScreen').classList.remove('show');
     document.getElementById('errorScreen').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  function retryGenerate() {
+    if (lastGenerateData) {
+      generateCV(lastGenerateData);
+    } else {
+      backToForm();
+    }
+  }
   function backToForm() {
+    stopLoadingRotate();
     document.getElementById('resultSection').classList.remove('show');
     document.getElementById('errorScreen').classList.remove('show');
     document.getElementById('questionsScreen').classList.remove('show');

@@ -581,6 +581,15 @@
       </div>
     </div>
 
+    <div class="field-group">
+      <div class="field-label">Deskripsi Pekerjaan <span class="optional-tag">Opsional, tapi sangat disarankan</span></div>
+      <div class="field-hint">Tempel teks lowongan kerja yang kamu incar (tanggung jawab, kualifikasi, kata kunci yang perusahaan cari). AI akan menyesuaikan istilah dan penekanan di CV kamu supaya "nyambung" persis dengan yang dicari perusahaan — HANYA untuk bagian yang memang sesuai fakta pengalamanmu, bukan mengarang.</div>
+      <div class="field-entry">
+        <textarea id="inputJobDesc" placeholder="Contoh: Membuat Purchase Order (PO), receiving, stock opname, serta laporan penjualan dan persediaan..."></textarea>
+        <span class="char-count">0 karakter</span>
+      </div>
+    </div>
+
     <div class="field-group" data-category="pendidikan">
       <div class="field-label">Pendidikan <span class="required-mark">●</span></div>
       <div class="field-hint">Contoh: S1 Ekonomi Syariah, UIN Siber Syekh Nurjati Cirebon, 2022–2026, IPK 3.7</div>
@@ -722,6 +731,7 @@
         nama: document.getElementById('inputNama').value,
         kontak: document.getElementById('inputKontak').value,
         posisi: document.getElementById('inputPosisi').value,
+        jobDescription: document.getElementById('inputJobDesc').value,
         entries: {}
       };
       Object.keys(FIELD_CONFIG).forEach(wrapId => {
@@ -743,6 +753,12 @@
     if (state.nama) document.getElementById('inputNama').value = state.nama;
     if (state.kontak) document.getElementById('inputKontak').value = state.kontak;
     if (state.posisi) document.getElementById('inputPosisi').value = state.posisi;
+    if (state.jobDescription) {
+      const jd = document.getElementById('inputJobDesc');
+      jd.value = state.jobDescription;
+      const counter = jd.parentElement.querySelector('.char-count');
+      if (counter) counter.textContent = `${jd.value.length} karakter`;
+    }
 
     Object.keys(FIELD_CONFIG).forEach(wrapId => {
       const values = (state.entries && state.entries[wrapId]) || [];
@@ -831,6 +847,7 @@
     const nama = document.getElementById('inputNama').value.trim();
     const kontak = document.getElementById('inputKontak').value.trim();
     const posisi = document.getElementById('inputPosisi').value.trim();
+    const jobDescription = document.getElementById('inputJobDesc').value.trim();
     const pendidikanEntries = getEntries('wrapPendidikan');
     const kerjaEntries = getEntries('wrapPengalamanKerja');
     const orgEntries = getEntries('wrapOrganisasi');
@@ -848,7 +865,7 @@
       return;
     }
 
-    pendingCVData = { nama, kontak, posisi, pendidikanEntries, kerjaEntries, orgEntries, sertifEntries };
+    pendingCVData = { nama, kontak, posisi, jobDescription, pendidikanEntries, kerjaEntries, orgEntries, sertifEntries };
     document.getElementById('confirmOverlay').classList.add('show');
   }
 
@@ -899,6 +916,7 @@
 10. Gaya bahasa: HINDARI kalimat generik ala-AI/buzzword kosong tanpa substansi (contoh yang HARUS dihindari: "menghasilkan hasil yang optimal", "memastikan kelancaran operasional", "meningkatkan efisiensi" tanpa angka pendukung, "berkontribusi signifikan" tanpa penjelasan).
 11. Format periode WAJIB konsisten: pola "[Bulan Mulai] – [Bulan Selesai] [Tahun]" atau "[Tahun Mulai] – [Tahun Selesai]" (gunakan tanda "–" dengan spasi di kedua sisi). Ubah ke format ini apa pun kata penghubung asli dari pengguna (misal "dari Februari sampai Juni 2025" atau "Februari s/d Juni 2025" harus ditulis ulang jadi "Februari – Juni 2025"). Jika tahun mulai dan selesai berbeda, tulis tahun di kedua sisi (misal "Agustus 2022 – Juni 2026"). Jika hanya beda bulan tapi tahun sama, cukup tulis tahun sekali di akhir (misal "Februari – Juni 2025").
 12. Kata kunci ATS: jika ada daftar "Kata kunci relevan untuk posisi ini" di akhir prompt, sisipkan secara natural ke profil/bullet/keterampilan HANYA jika relevan dan didukung fakta dari pengalaman pengguna — JANGAN memasukkan kata kunci yang tidak ada dasarnya, karena itu membuat CV terlihat tidak jujur.
+13. Keselarasan dengan Deskripsi Pekerjaan (jika ada "DESKRIPSI PEKERJAAN" di input): ini instruksi PALING PENTING untuk membuat CV relevan secara kontekstual. Baca tanggung jawab dan istilah PERSIS yang dipakai di deskripsi pekerjaan tersebut. Untuk setiap tugas pengguna yang SECARA SUBSTANSI sama/tumpang-tindih dengan salah satu tanggung jawab di deskripsi pekerjaan itu (meski pengguna menceritakannya dengan kata-kata berbeda), tulis ulang bullet itu MENGGUNAKAN istilah persis dari deskripsi pekerjaan. Contoh: kalau deskripsi pekerjaan menyebut "Membuat Purchase Order (PO), receiving, stock opname, serta laporan penjualan dan persediaan", dan pengguna cerita "saya biasa nyatet barang masuk dan bikin surat pesanan ke supplier serta ngecek stok gudang tiap bulan" — tulis ulang jadi bullet yang eksplisit menyebut "membuat Purchase Order (PO)", "receiving barang", dan "stock opname", karena itu tugas yang SAMA, cuma istilah pengguna lebih awam. JANGAN menambahkan tanggung jawab dari deskripsi pekerjaan yang TIDAK ADA padanannya sama sekali di cerita pengguna — itu mengarang pengalaman yang tidak dimiliki, dan ini pelanggaran serius terhadap aturan #6.
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), dengan struktur PERSIS seperti berikut:
 {
@@ -920,6 +938,7 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   function buildUserPrompt(data) {
     let text = '';
     if (data.posisi) text += `Posisi yang dilamar: ${data.posisi}\n`;
+    if (data.jobDescription) text += `\n--- DESKRIPSI PEKERJAAN (dari lowongan yang dilamar user) ---\n${data.jobDescription}\n--- akhir deskripsi pekerjaan ---\n\n`;
     text += buildCategoryText(data.pendidikanEntries, 'Pendidikan') + '\n';
     text += buildCategoryText(data.kerjaEntries, 'Pengalaman Kerja') + '\n';
     if (data.orgEntries.length) text += buildCategoryText(data.orgEntries, 'Pengalaman Organisasi') + '\n';
@@ -932,11 +951,12 @@ Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain 
   const RESEARCH_INSTRUCTION = `Kamu adalah asisten riset untuk membantu menyusun CV yang matang. Kamu punya akses pencarian web (Google Search).
 
 Tugasmu:
-1. Jika ada "Posisi yang dilamar" dan/atau nama institusi/perusahaan yang disebutkan di data pengguna, cari sekilas info tentang industri, tanggung jawab umum, atau skill yang biasa dicari untuk posisi tersebut lewat pencarian web. Rangkum 5–10 kata kunci (keyword) yang relevan dan sering dicari sistem ATS/rekruter untuk posisi ini (bisa berupa skill teknis, tools, atau istilah industri), masukkan ke field "keywords". Jika tidak ada posisi/institusi yang disebutkan, kembalikan "keywords" kosong.
-2. Periksa SETIAP entri pendidikan dan pengalaman kerja/organisasi milik pengguna. Untuk entri yang TIDAK menyebutkan rentang waktu (bulan/tahun mulai-selesai) sama sekali, buat SATU pertanyaan singkat menanyakan periode tersebut.
-3. Untuk setiap klaim pencapaian yang masih samar/tidak terukur (kata seperti "meningkatkan", "membantu", "mengelola", "mempercepat" tanpa angka/skala pembanding), buat SATU pertanyaan yang menggali angka atau bukti nyata di baliknya. Jangan bertanya soal hal yang sudah jelas angkanya.
-4. Buat MAKSIMAL 6 pertanyaan total, prioritaskan yang paling berdampak ke kekuatan CV. Jangan bertanya hal yang sudah lengkap dijawab pengguna.
-5. Bahasa pertanyaan: santai, jelas, Bahasa Indonesia, seperti manusia bertanya langsung ke pengguna — bukan format formulir kaku.
+1. Jika ada "DESKRIPSI PEKERJAAN" yang disertakan pengguna, itu adalah SUMBER UTAMA kata kunci — ekstrak 8-15 kata kunci/frasa PERSIS dari deskripsi tersebut (tanggung jawab, tools, kualifikasi, istilah yang dipakai perusahaan), masukkan ke field "keywords". Kalau tidak ada deskripsi pekerjaan tapi ada "Posisi yang dilamar"/nama institusi, baru cari sekilas info lewat pencarian web tentang tanggung jawab umum & skill yang biasa dicari untuk posisi itu, rangkum 5-10 keyword serupa. Jika keduanya tidak ada, kembalikan "keywords" kosong.
+2. Kalau ada deskripsi pekerjaan, bandingkan poin tanggung jawab/kualifikasi di dalamnya dengan cerita pengalaman pengguna. Untuk tanggung jawab yang KEMUNGKINAN BESAR relevan tapi belum jelas disebutkan pengguna apakah dia pernah melakukannya, buat SATU pertanyaan konfirmasi (contoh: "Deskripsi pekerjaan ini minta pengalaman membuat Purchase Order (PO) dan stock opname — kamu pernah melakukan itu di pengalaman kerjamu?"). Jangan bertanya soal hal yang jelas TIDAK relevan sama sekali dengan latar belakang pengguna.
+3. Periksa SETIAP entri pendidikan dan pengalaman kerja/organisasi milik pengguna. Untuk entri yang TIDAK menyebutkan rentang waktu (bulan/tahun mulai-selesai) sama sekali, buat SATU pertanyaan singkat menanyakan periode tersebut.
+4. Untuk setiap klaim pencapaian yang masih samar/tidak terukur (kata seperti "meningkatkan", "membantu", "mengelola", "mempercepat" tanpa angka/skala pembanding), buat SATU pertanyaan yang menggali angka atau bukti nyata di baliknya. Jangan bertanya soal hal yang sudah jelas angkanya.
+5. Buat MAKSIMAL 6 pertanyaan total, prioritaskan yang paling berdampak ke kekuatan CV (pertanyaan soal kecocokan deskripsi pekerjaan diprioritaskan paling atas kalau ada). Jangan bertanya hal yang sudah lengkap dijawab pengguna.
+6. Bahasa pertanyaan: santai, jelas, Bahasa Indonesia, seperti manusia bertanya langsung ke pengguna — bukan format formulir kaku.
 
 Balas HANYA dalam format JSON valid (tanpa markdown code fence, tanpa teks lain di luar JSON), struktur PERSIS:
 {
